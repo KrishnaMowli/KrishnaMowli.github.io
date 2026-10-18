@@ -66,8 +66,11 @@
   .hero canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
   .hero-inner{position:relative;z-index:2;padding:56px 0 40px;width:100%;pointer-events:none;}
   .hero-text{
-    max-width:560px;background:rgba(236,238,242,0.88);backdrop-filter:blur(3px);
+    max-width:560px;background:rgba(236,238,242,0.38);backdrop-filter:blur(2px);
     padding:22px 26px;border:1px solid var(--line);pointer-events:auto;
+  }
+  .hero-text h1, .hero-text p, .hero-text .eyebrow, .hero-text .role{
+    text-shadow:0 1px 0 rgba(236,238,242,0.9), 0 0 14px rgba(236,238,242,0.9);
   }
   .eyebrow{font-family:'JetBrains Mono';font-size:12.5px;color:var(--red);margin-bottom:12px;}
   .hero h1{font-size:31px;letter-spacing:-0.01em;}
@@ -82,8 +85,8 @@
   .hero-cap{
     position:relative;z-index:2;pointer-events:none;
     font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono';
-    background:rgba(236,238,242,0.88);display:inline-block;padding:8px 12px;
-    margin:0 0 18px 0;border:1px solid var(--line);max-width:560px;line-height:1.5;
+    display:inline-block;margin:0 0 16px 0;line-height:1.5;
+    text-shadow:0 0 8px rgba(236,238,242,0.95), 0 0 8px rgba(236,238,242,0.95);
   }
 
   section{padding:52px 0;border-bottom:1px solid var(--line);}
@@ -182,12 +185,12 @@
     </div>
   </div>
   <div class="wrap" style="position:relative;z-index:2;padding-bottom:18px;">
-    <div class="hero-cap">Ground robots navigate to waypoints while sensing with simulated LIDAR and keeping a probabilistic safety margin (Cantelli's inequality) between every pair — a policy shaped like reinforcement learning, under process noise like a stochastic process. <b>Click anywhere to drop an obstacle.</b></div>
+    <div class="hero-cap">Click anywhere to drop an obstacle →</div>
   </div>
 </header>
 
 <section id="about" class="wrap">
-  <div class="section-head"><div class="num">01</div><h2>About</h2></div>
+  <div class="section-head"><h2>About</h2></div>
   <div class="about-grid">
     <img src="assets/photo.png" alt="Krishna Mowli" />
     <div>
@@ -201,7 +204,7 @@
 </section>
 
 <section id="projects" class="wrap">
-  <div class="section-head"><div class="num">02</div><h2>Selected work</h2></div>
+  <div class="section-head"><h2>Selected work</h2></div>
 
   <div class="project">
     <div class="bar robo"></div>
@@ -277,7 +280,7 @@
 </section>
 
 <section id="skills" class="wrap">
-  <div class="section-head"><div class="num">03</div><h2>Skills</h2></div>
+  <div class="section-head"><h2>Skills</h2></div>
   <div class="skills">
     <div class="skill-group featured">
       <h4>Probability, stochastic processes &amp; RL</h4>
@@ -299,7 +302,7 @@
 </section>
 
 <section id="experience" class="wrap">
-  <div class="section-head"><div class="num">04</div><h2>Experience</h2></div>
+  <div class="section-head"><h2>Experience</h2></div>
   <div class="timeline">
     <div class="tl-item"><div class="when">2025–present</div><div><h4>Teaching Assistant, Control Systems</h4><div class="org">IIT Hyderabad</div></div></div>
     <div class="tl-item"><div class="when">2026–present</div><div><h4>Placement Coordinator, Systems &amp; Control</h4><div class="org">IIT Hyderabad</div></div></div>
@@ -311,7 +314,7 @@
 </section>
 
 <section id="contact" class="wrap">
-  <div class="section-head"><div class="num">05</div><h2>Resume &amp; contact</h2></div>
+  <div class="section-head"><h2>Resume &amp; contact</h2></div>
   <div class="resume-box">
     <div class="t">Master_CV.pdf<span>full academic record, achievements, certifications, and complete project detail</span></div>
     <a class="btn primary" href="assets/resume.pdf" target="_blank" rel="noopener">open resume →</a>
@@ -359,9 +362,10 @@
 
   // ---------- robots ----------
   const N = 6;
-  const safety = 30;      // desired clearance between robots
-  const lidarRange = 110;
-  const bodyLen = 15, bodyW = 10;
+  const safety = 38;      // desired clearance between robots
+  const lidarRange = 140;
+  const bodyLen = 27, bodyW = 18;
+  const LIDAR_TRAIL = 14; // how many past sweep angles to render as fading trail
 
   function randGoal(){ return { x: 24+Math.random()*(W-48), y: 24+Math.random()*(H-48) }; }
 
@@ -373,6 +377,7 @@
       speed: 0,
       goal: randGoal(),
       lidarAngle: Math.random()*Math.PI*2,
+      lidarHistory: [],
       jx:0, jy:0 // small stochastic jitter (process noise)
     });
   }
@@ -439,7 +444,9 @@
       r.y = Math.max(14, Math.min(H-14, r.y));
 
       // LIDAR sweep (continuous rotation, independent of heading)
-      r.lidarAngle += 0.11;
+      r.lidarAngle += 0.085;
+      r.lidarHistory.push(r.lidarAngle);
+      if(r.lidarHistory.length > LIDAR_TRAIL) r.lidarHistory.shift();
 
       // tiny process-noise jitter on rendered position
       r.jx = r.jx*0.85 + (Math.random()-0.5)*0.9;
@@ -459,57 +466,78 @@
 
   function drawRobot(r){
     const x = r.x+r.jx, y = r.y+r.jy;
+
+    // LIDAR radar-style sweep trail, drawn first (world space, behind robot body)
+    const bx = x, by = y;
+    for(let k=0;k<r.lidarHistory.length;k++){
+      const ang = r.lidarHistory[k];
+      const t = (k+1)/r.lidarHistory.length; // 0 = oldest, 1 = newest
+      const alpha = 0.035 + t*t*0.22;
+      const grad = ctx.createLinearGradient(bx, by, bx+Math.cos(ang)*lidarRange, by+Math.sin(ang)*lidarRange);
+      grad.addColorStop(0, `rgba(165,54,42,${alpha})`);
+      grad.addColorStop(1, 'rgba(165,54,42,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1 + t*1.3;
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx+Math.cos(ang)*lidarRange, by+Math.sin(ang)*lidarRange);
+      ctx.stroke();
+    }
+    // bright leading edge of the sweep
+    const headAng = r.lidarAngle;
+    ctx.beginPath();
+    ctx.arc(bx+Math.cos(headAng)*lidarRange, by+Math.sin(headAng)*lidarRange, 2, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(165,54,42,0.85)';
+    ctx.fill();
+
     ctx.save();
     ctx.translate(x,y);
     ctx.rotate(r.heading);
 
     // soft shadow
-    ctx.fillStyle = 'rgba(22,32,46,0.12)';
+    ctx.fillStyle = 'rgba(22,32,46,0.14)';
     ctx.beginPath();
-    ctx.ellipse(0, bodyW*0.55, bodyLen*0.55, 3, 0, 0, Math.PI*2);
+    ctx.ellipse(0, bodyW*0.58, bodyLen*0.52, bodyW*0.16, 0, 0, Math.PI*2);
     ctx.fill();
 
     // tracks/wheels
     ctx.fillStyle = '#596273';
-    ctx.fillRect(-bodyLen*0.42, -bodyW*0.62, bodyLen*0.84, 2.4);
-    ctx.fillRect(-bodyLen*0.42,  bodyW*0.38, bodyLen*0.84, 2.4);
+    ctx.fillRect(-bodyLen*0.42, -bodyW*0.62, bodyLen*0.84, bodyW*0.14);
+    ctx.fillRect(-bodyLen*0.42,  bodyW*0.48, bodyLen*0.84, bodyW*0.14);
 
     // body (rounded rect, TurtleBot-ish cylinder silhouette seen from top)
-    roundRectPath(-bodyLen*0.5, -bodyW*0.5, bodyLen, bodyW, 3.5);
+    roundRectPath(-bodyLen*0.5, -bodyW*0.5, bodyLen, bodyW, bodyW*0.3);
     ctx.fillStyle = '#F6F7F9';
     ctx.fill();
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.6;
     ctx.strokeStyle = '#16202E';
     ctx.stroke();
 
     // heading indicator (front edge tick)
     ctx.fillStyle = '#A5362A';
     ctx.beginPath();
-    ctx.moveTo(bodyLen*0.5-1, 0);
-    ctx.lineTo(bodyLen*0.5-5, -2.6);
-    ctx.lineTo(bodyLen*0.5-5, 2.6);
+    ctx.moveTo(bodyLen*0.5-1.5, 0);
+    ctx.lineTo(bodyLen*0.5-bodyLen*0.3, -bodyW*0.22);
+    ctx.lineTo(bodyLen*0.5-bodyLen*0.3,  bodyW*0.22);
     ctx.closePath();
     ctx.fill();
 
-    // sensor dome
+    // sensor dome (spins with the lidar sweep for a "rotating turret" read)
+    ctx.save();
+    ctx.rotate(r.lidarAngle - r.heading);
     ctx.beginPath();
-    ctx.arc(0,0,2.6,0,Math.PI*2);
+    ctx.arc(0,0,bodyW*0.26,0,Math.PI*2);
     ctx.fillStyle = '#2056A8';
     ctx.fill();
-
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(bodyW*0.5,0);
+    ctx.strokeStyle = '#2056A8';
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
     ctx.restore();
 
-    // LIDAR sweep beam, drawn in world space (not rotated with body)
-    const bx = x, by = y;
-    const grad = ctx.createLinearGradient(bx, by, bx+Math.cos(r.lidarAngle)*lidarRange, by+Math.sin(r.lidarAngle)*lidarRange);
-    grad.addColorStop(0, 'rgba(165,54,42,0.55)');
-    grad.addColorStop(1, 'rgba(165,54,42,0)');
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 1.1;
-    ctx.beginPath();
-    ctx.moveTo(bx, by);
-    ctx.lineTo(bx+Math.cos(r.lidarAngle)*lidarRange, by+Math.sin(r.lidarAngle)*lidarRange);
-    ctx.stroke();
+    ctx.restore();
   }
 
   function draw(){
