@@ -61,22 +61,30 @@
   nav a{font-size:13.5px;color:var(--ink-soft);text-decoration:none;font-family:'JetBrains Mono';transition:color .15s;}
   nav a:hover{color:var(--blue);}
 
-  .hero{padding:56px 0 48px;border-bottom:1px solid var(--line);}
-  .hero-top{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:start;}
+  .hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden;min-height:560px;display:flex;align-items:center;}
+  .hero::before{display:none;}
+  .hero canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
+  .hero-inner{position:relative;z-index:2;padding:56px 0 40px;width:100%;pointer-events:none;}
+  .hero-text{
+    max-width:560px;background:rgba(236,238,242,0.88);backdrop-filter:blur(3px);
+    padding:22px 26px;border:1px solid var(--line);pointer-events:auto;
+  }
   .eyebrow{font-family:'JetBrains Mono';font-size:12.5px;color:var(--red);margin-bottom:12px;}
-  .hero h1{font-size:33px;letter-spacing:-0.01em;}
+  .hero h1{font-size:31px;letter-spacing:-0.01em;}
   .hero .role{color:var(--blue);font-family:'JetBrains Mono';font-weight:500;font-size:14.5px;margin-top:12px;}
-  .hero p{color:var(--ink-soft);margin-top:16px;font-size:15.5px;max-width:52ch;}
-  .hero .links{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;font-size:13.5px;font-weight:500;text-decoration:none;font-family:'JetBrains Mono';border:1px solid var(--ink);color:var(--ink);transition:all .15s;}
+  .hero p{color:var(--ink-soft);margin-top:16px;font-size:15px;max-width:52ch;}
+  .hero .links{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;font-size:13.5px;font-weight:500;text-decoration:none;font-family:'JetBrains Mono';border:1px solid var(--ink);color:var(--ink);transition:all .15s;background:var(--paper-raised);}
   .btn.primary{background:var(--ink);color:var(--paper);}
   .btn.primary:hover{background:var(--blue);border-color:var(--blue);}
   .btn.ghost:hover{border-color:var(--blue);color:var(--blue);}
 
-  .hero-visual{position:relative;border:1px solid var(--line);background:var(--paper-raised);}
-  .hero-visual canvas{display:block;width:100%;height:320px;}
-  .hero-visual .cap{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.5;}
-  .hero-visual .cap b{color:var(--ink);font-weight:600;}
+  .hero-cap{
+    position:relative;z-index:2;pointer-events:none;
+    font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono';
+    background:rgba(236,238,242,0.88);display:inline-block;padding:8px 12px;
+    margin:0 0 18px 0;border:1px solid var(--line);max-width:560px;line-height:1.5;
+  }
 
   section{padding:52px 0;border-bottom:1px solid var(--line);}
   section:last-of-type{border-bottom:none;}
@@ -159,9 +167,10 @@
   </div>
 </nav>
 
-<header class="wrap hero">
-  <div class="hero-top">
-    <div>
+<header class="hero" id="heroSection">
+  <canvas id="sim"></canvas>
+  <div class="wrap hero-inner">
+    <div class="hero-text">
       <div class="eyebrow">// systems &amp; control, iit hyderabad</div>
       <h1>Making distributed systems provably safe under uncertainty.</h1>
       <p>M.Tech, Systems and Control. I work on multi-robot coordination, stochastic processes, and control theory — currently researching probabilistic collision-avoidance guarantees for robot swarms that move, sense, and communicate under noise.</p>
@@ -171,10 +180,9 @@
         <a class="btn ghost" href="https://github.com/KrishnaMowli" target="_blank" rel="noopener">github</a>
       </div>
     </div>
-    <div class="hero-visual">
-      <canvas id="sim"></canvas>
-      <div class="cap"><b>Stochastic multi-agent consensus — illustrative.</b> Each agent follows a smooth consensus policy (reinforcement-learning-style convergence) perturbed by process noise (a stochastic process), while a probabilistic clearance bound — the idea behind Cantelli's inequality — is kept between every pair.</div>
-    </div>
+  </div>
+  <div class="wrap" style="position:relative;z-index:2;padding-bottom:18px;">
+    <div class="hero-cap">Ground robots navigate to waypoints while sensing with simulated LIDAR and keeping a probabilistic safety margin (Cantelli's inequality) between every pair — a policy shaped like reinforcement learning, under process noise like a stochastic process. <b>Click anywhere to drop an obstacle.</b></div>
   </div>
 </header>
 
@@ -322,114 +330,236 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const canvas = document.getElementById('sim');
   const ctx = canvas.getContext('2d');
+  const heroEl = document.getElementById('heroSection');
   let W, H, dpr;
+
   function resize(){
     dpr = window.devicePixelRatio || 1;
     W = canvas.clientWidth; H = canvas.clientHeight;
     canvas.width = W*dpr; canvas.height = H*dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    ctx.fillStyle = '#F6F7F9';
-    ctx.fillRect(0,0,W,H);
   }
   window.addEventListener('resize', resize);
   resize();
 
-  const N = 7;
-  const commRadius = 150;
-  const safety = 42;
-  const agents = [];
+  // ---------- obstacles: click/tap to place ----------
+  const MAX_OBS = 6;
+  const obstacles = []; // {x,y,r,born}
+  function placeObstacle(clientX, clientY){
+    const r = canvas.getBoundingClientRect();
+    const x = clientX - r.left, y = clientY - r.top;
+    if(x<0||y<0||x>W||y>H) return;
+    obstacles.push({x, y, r:26, born: performance.now()});
+    if(obstacles.length > MAX_OBS) obstacles.shift();
+  }
+  canvas.addEventListener('click', e => placeObstacle(e.clientX, e.clientY));
+  canvas.addEventListener('touchstart', e => {
+    if(e.touches && e.touches[0]) placeObstacle(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+
+  // ---------- robots ----------
+  const N = 6;
+  const safety = 30;      // desired clearance between robots
+  const lidarRange = 110;
+  const bodyLen = 15, bodyW = 10;
+
+  function randGoal(){ return { x: 24+Math.random()*(W-48), y: 24+Math.random()*(H-48) }; }
+
+  const robots = [];
   for(let i=0;i<N;i++){
-    const angle = (i/N)*Math.PI*2;
-    agents.push({
-      tx: W/2 + Math.cos(angle)*120, ty: H/2 + Math.sin(angle)*90,
-      vx:0, vy:0,
-      ox:0, oy:0,
-      hue: 208 + (i*6)
+    const x = 40+Math.random()*(W-80), y = 40+Math.random()*(H-80);
+    robots.push({
+      x, y, heading: Math.random()*Math.PI*2,
+      speed: 0,
+      goal: randGoal(),
+      lidarAngle: Math.random()*Math.PI*2,
+      jx:0, jy:0 // small stochastic jitter (process noise)
     });
   }
-  const obstacle = {x:0.28, y:0.72, r:30};
 
-  function step(){
-    for(let i=0;i<N;i++){
-      let sx=0, sy=0, cnt=0;
-      for(let j=0;j<N;j++){
-        if(i===j) continue;
-        const dx = agents[j].tx-agents[i].tx, dy = agents[j].ty-agents[i].ty;
-        const d = Math.hypot(dx,dy);
-        if(d < commRadius){ sx+=dx; sy+=dy; cnt++; }
-      }
-      let fx=0, fy=0;
-      if(cnt>0){ fx=(sx/cnt)*0.0016; fy=(sy/cnt)*0.0016; }
-      for(let j=0;j<N;j++){
-        if(i===j) continue;
-        const dx = agents[i].tx-agents[j].tx, dy = agents[i].ty-agents[j].ty;
-        const d = Math.hypot(dx,dy) || 0.001;
-        if(d < safety){ const p=(safety-d)/safety*0.3; fx+=(dx/d)*p; fy+=(dy/d)*p; }
-      }
-      const ox = obstacle.x*W, oy = obstacle.y*H;
-      const dx = agents[i].tx-ox, dy = agents[i].ty-oy;
-      const d = Math.hypot(dx,dy) || 0.001;
-      if(d < obstacle.r+safety){ const p=(obstacle.r+safety-d)/(obstacle.r+safety)*0.4; fx+=(dx/d)*p; fy+=(dy/d)*p; }
+  function angDiff(a,b){
+    let d = (b-a) % (Math.PI*2);
+    if(d > Math.PI) d -= Math.PI*2;
+    if(d < -Math.PI) d += Math.PI*2;
+    return d;
+  }
 
-      agents[i].vx = agents[i].vx*0.9 + fx;
-      agents[i].vy = agents[i].vy*0.9 + fy;
-      agents[i].tx += agents[i].vx;
-      agents[i].ty += agents[i].vy;
-      agents[i].tx = Math.max(16, Math.min(W-16, agents[i].tx));
-      agents[i].ty = Math.max(16, Math.min(H-16, agents[i].ty));
-
-      agents[i].ox = agents[i].ox*0.88 + (Math.random()-0.5)*3.2;
-      agents[i].oy = agents[i].oy*0.88 + (Math.random()-0.5)*3.2;
+  function step(dt){
+    const now = performance.now();
+    // expire old obstacles after 9s
+    for(let k=obstacles.length-1;k>=0;k--){
+      if(now - obstacles[k].born > 9000) obstacles.splice(k,1);
     }
-    let minD = Infinity;
-    for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
-      const d = Math.hypot(agents[i].tx-agents[j].tx, agents[i].ty-agents[j].ty);
-      if(d<minD) minD=d;
-    }
-    return minD;
+
+    robots.forEach((r, i)=>{
+      // goal seeking
+      let toGoalX = r.goal.x-r.x, toGoalY = r.goal.y-r.y;
+      let distGoal = Math.hypot(toGoalX, toGoalY);
+      if(distGoal < 18){ r.goal = randGoal(); toGoalX = r.goal.x-r.x; toGoalY = r.goal.y-r.y; distGoal = Math.hypot(toGoalX,toGoalY)||1; }
+      let desiredAngle = Math.atan2(toGoalY, toGoalX);
+
+      // repulsion from obstacles (avoidance, not destruction)
+      let repX=0, repY=0, nearObstacle=false;
+      obstacles.forEach(o=>{
+        const dx=r.x-o.x, dy=r.y-o.y, d=Math.hypot(dx,dy)||0.001;
+        if(d < o.r+safety){
+          const p = (o.r+safety-d)/(o.r+safety);
+          repX += (dx/d)*p; repY += (dy/d)*p;
+          if(d < o.r+lidarRange*0.5) nearObstacle = true;
+        }
+      });
+      // repulsion from other robots
+      robots.forEach((other,j)=>{
+        if(i===j) return;
+        const dx=r.x-other.x, dy=r.y-other.y, d=Math.hypot(dx,dy)||0.001;
+        if(d < safety){
+          const p=(safety-d)/safety;
+          repX += (dx/d)*p*0.8; repY += (dy/d)*p*0.8;
+        }
+      });
+
+      // blend goal-seeking heading with repulsion heading
+      let steerAngle = desiredAngle;
+      if(repX!==0 || repY!==0){
+        const repAngle = Math.atan2(repY, repX);
+        steerAngle = Math.atan2(
+          Math.sin(desiredAngle)*0.55 + Math.sin(repAngle)*1.1,
+          Math.cos(desiredAngle)*0.55 + Math.cos(repAngle)*1.1
+        );
+      }
+
+      const diff = angDiff(r.heading, steerAngle);
+      r.heading += diff * 0.09;
+      const targetSpeed = nearObstacle ? 0.55 : 1.15;
+      r.speed += (targetSpeed - r.speed) * 0.08;
+
+      r.x += Math.cos(r.heading) * r.speed;
+      r.y += Math.sin(r.heading) * r.speed;
+      r.x = Math.max(14, Math.min(W-14, r.x));
+      r.y = Math.max(14, Math.min(H-14, r.y));
+
+      // LIDAR sweep (continuous rotation, independent of heading)
+      r.lidarAngle += 0.11;
+
+      // tiny process-noise jitter on rendered position
+      r.jx = r.jx*0.85 + (Math.random()-0.5)*0.9;
+      r.jy = r.jy*0.85 + (Math.random()-0.5)*0.9;
+    });
+  }
+
+  function roundRectPath(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function drawRobot(r){
+    const x = r.x+r.jx, y = r.y+r.jy;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(r.heading);
+
+    // soft shadow
+    ctx.fillStyle = 'rgba(22,32,46,0.12)';
+    ctx.beginPath();
+    ctx.ellipse(0, bodyW*0.55, bodyLen*0.55, 3, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // tracks/wheels
+    ctx.fillStyle = '#596273';
+    ctx.fillRect(-bodyLen*0.42, -bodyW*0.62, bodyLen*0.84, 2.4);
+    ctx.fillRect(-bodyLen*0.42,  bodyW*0.38, bodyLen*0.84, 2.4);
+
+    // body (rounded rect, TurtleBot-ish cylinder silhouette seen from top)
+    roundRectPath(-bodyLen*0.5, -bodyW*0.5, bodyLen, bodyW, 3.5);
+    ctx.fillStyle = '#F6F7F9';
+    ctx.fill();
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = '#16202E';
+    ctx.stroke();
+
+    // heading indicator (front edge tick)
+    ctx.fillStyle = '#A5362A';
+    ctx.beginPath();
+    ctx.moveTo(bodyLen*0.5-1, 0);
+    ctx.lineTo(bodyLen*0.5-5, -2.6);
+    ctx.lineTo(bodyLen*0.5-5, 2.6);
+    ctx.closePath();
+    ctx.fill();
+
+    // sensor dome
+    ctx.beginPath();
+    ctx.arc(0,0,2.6,0,Math.PI*2);
+    ctx.fillStyle = '#2056A8';
+    ctx.fill();
+
+    ctx.restore();
+
+    // LIDAR sweep beam, drawn in world space (not rotated with body)
+    const bx = x, by = y;
+    const grad = ctx.createLinearGradient(bx, by, bx+Math.cos(r.lidarAngle)*lidarRange, by+Math.sin(r.lidarAngle)*lidarRange);
+    grad.addColorStop(0, 'rgba(165,54,42,0.55)');
+    grad.addColorStop(1, 'rgba(165,54,42,0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+    ctx.moveTo(bx, by);
+    ctx.lineTo(bx+Math.cos(r.lidarAngle)*lidarRange, by+Math.sin(r.lidarAngle)*lidarRange);
+    ctx.stroke();
   }
 
   function draw(){
-    ctx.fillStyle = 'rgba(246,247,249,0.14)';
-    ctx.fillRect(0,0,W,H);
+    ctx.clearRect(0,0,W,H);
 
-    ctx.beginPath();
-    ctx.arc(obstacle.x*W, obstacle.y*H, obstacle.r, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(165,54,42,0.08)';
-    ctx.strokeStyle = 'rgba(165,54,42,0.4)';
-    ctx.fill(); ctx.stroke();
-
-    ctx.lineWidth = 1;
-    for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
-      const d = Math.hypot(agents[i].tx-agents[j].tx, agents[i].ty-agents[j].ty);
-      if(d < commRadius){
-        ctx.strokeStyle = 'rgba(32,86,168,'+(0.22*(1-d/commRadius)+0.05)+')';
-        ctx.beginPath();
-        ctx.moveTo(agents[i].tx+agents[i].ox, agents[i].ty+agents[i].oy);
-        ctx.lineTo(agents[j].tx+agents[j].ox, agents[j].ty+agents[j].oy);
-        ctx.stroke();
-      }
-    }
-
-    agents.forEach(a=>{
-      const dx = a.tx+a.ox, dy = a.ty+a.oy;
+    // obstacles
+    const now = performance.now();
+    obstacles.forEach(o=>{
+      const age = now - o.born;
+      const fade = Math.max(0, 1 - age/9000);
       ctx.beginPath();
-      ctx.arc(dx, dy, 3.2, 0, Math.PI*2);
-      ctx.fillStyle = `hsl(${a.hue} 55% 38%)`;
-      ctx.fill();
+      ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(165,54,42,${0.10*fade})`;
+      ctx.strokeStyle = `rgba(165,54,42,${0.55*fade})`;
+      ctx.lineWidth = 1.2;
+      ctx.fill(); ctx.stroke();
+      // detection ping if any lidar beam is roughly pointed at it and close
+      robots.forEach(r=>{
+        const dx=o.x-r.x, dy=o.y-r.y, d=Math.hypot(dx,dy);
+        if(d < lidarRange){
+          const angToObs = Math.atan2(dy,dx);
+          if(Math.abs(angDiff(r.lidarAngle, angToObs)) < 0.12){
+            const pulse = (Math.sin(now/120)+1)/2;
+            ctx.beginPath();
+            ctx.arc(o.x,o.y,o.r+3+pulse*3,0,Math.PI*2);
+            ctx.strokeStyle = `rgba(165,54,42,${0.5*fade})`;
+            ctx.stroke();
+          }
+        }
+      });
+    });
+
+    // faint goal markers + dashed intent line
+    robots.forEach(r=>{
+      ctx.save();
+      ctx.setLineDash([3,4]);
+      ctx.strokeStyle = 'rgba(32,86,168,0.18)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(a.tx, a.ty, 1.4, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(22,32,46,0.5)';
+      ctx.moveTo(r.x, r.y);
+      ctx.lineTo(r.goal.x, r.goal.y);
+      ctx.stroke();
+      ctx.restore();
+      ctx.beginPath();
+      ctx.arc(r.goal.x, r.goal.y, 2.5, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(32,86,168,0.35)';
       ctx.fill();
     });
 
-    const t = performance.now()/600;
-    const pulse = (Math.sin(t)+1)/2;
-    ctx.strokeStyle = `rgba(165,54,42,${0.15+0.25*pulse})`;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(W/2, H-18, 4+pulse*2, 0, Math.PI*2);
-    ctx.stroke();
+    robots.forEach(drawRobot);
   }
 
   function loop(){
