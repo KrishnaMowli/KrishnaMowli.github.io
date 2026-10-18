@@ -4,288 +4,216 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Krishna Mowli — Systems & Control</title>
-<meta name="description" content="G V S S Krishna Mowli — M.Tech Systems and Control, IIT Hyderabad. Multi-robot coordination, control theory, VLSI design, and data analytics." />
+<meta name="description" content="G V S S Krishna Mowli — M.Tech Systems and Control, IIT Hyderabad. Multi-robot coordination, stochastic processes, control theory, and data analytics." />
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0E1116;
-    --panel: #161B22;
-    --panel-2: #1C2330;
-    --line: #2A3240;
-    --ink: #E6E9EF;
-    --ink-soft: #8B95A5;
-    --amber: #E8A33D;
-    --teal: #4FB8A6;
-    --blue: #5C9FD6;
-    --radius: 3px;
-    --maxw: 760px;
+    --paper: #ECEEF2;
+    --paper-raised: #F6F7F9;
+    --grid: #D7DBE3;
+    --line: #C7CCD6;
+    --ink: #16202E;
+    --ink-soft: #596273;
+    --blue: #2056A8;
+    --blue-soft: #D7E2F2;
+    --red: #A5362A;
+    --sage: #4B6F5C;
+    --maxw: 700px;
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
     margin:0;
-    background:var(--bg);
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 32px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 100%,
+      var(--paper);
+    background-attachment:local;
     color:var(--ink);
-    font-family:'Inter',system-ui,sans-serif;
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
     font-size:16px;
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3,.display{
-    font-family:'Space Grotesk',sans-serif;
+  h1,h2,h3,.mono{
+    font-family:'JetBrains Mono',monospace;
     font-weight:600;
-    line-height:1.15;
+    line-height:1.2;
     margin:0;
     color:var(--ink);
   }
   a{color:inherit;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px 0 52px;position:relative;}
+  .wrap::before{
+    content:"";position:absolute;left:28px;top:0;bottom:0;width:1px;background:rgba(165,54,42,0.35);
+  }
   .prose{max-width:var(--maxw);}
 
-  /* ---------- nav ---------- */
-  nav{
-    position:sticky;top:0;z-index:50;
-    background:rgba(14,17,22,0.88);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;}
-  nav .mark{font-family:'Space Grotesk';font-weight:600;font-size:15px;letter-spacing:0.02em;}
-  nav .mark span{color:var(--amber);}
-  nav ul{list-style:none;display:flex;gap:28px;margin:0;padding:0;}
-  nav a{font-size:14px;color:var(--ink-soft);text-decoration:none;transition:color .15s;}
-  nav a:hover{color:var(--ink);}
-  nav .navtoggle{display:none;background:none;border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:var(--radius);font-size:13px;}
+  nav{position:sticky;top:0;z-index:50;background:rgba(236,238,242,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav .wrap::before{display:none;}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;padding-left:32px;}
+  nav .markname{font-family:'JetBrains Mono';font-weight:600;font-size:14.5px;}
+  nav .markname .dot{color:var(--red);}
+  nav ul{list-style:none;display:flex;gap:26px;margin:0;padding:0;}
+  nav a{font-size:13.5px;color:var(--ink-soft);text-decoration:none;font-family:'JetBrains Mono';transition:color .15s;}
+  nav a:hover{color:var(--blue);}
 
-  /* ---------- hero ---------- */
-  .hero{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:48px;
-    align-items:center;
-    padding:72px 0 64px;
-    border-bottom:1px solid var(--line);
-  }
-  .hero h1{font-size:40px;letter-spacing:-0.01em;}
-  .hero .role{color:var(--amber);font-family:'Space Grotesk';font-weight:500;font-size:16px;margin-top:10px;}
-  .hero p{color:var(--ink-soft);margin-top:18px;font-size:16px;max-width:52ch;}
-  .hero .links{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;}
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:10px 18px;border-radius:var(--radius);
-    font-size:14px;font-weight:500;text-decoration:none;
-    border:1px solid var(--line);transition:border-color .15s, background .15s;
-  }
-  .btn.primary{background:var(--amber);color:#14110A;border-color:var(--amber);font-weight:600;}
-  .btn.primary:hover{background:#f0ae4d;}
-  .btn.ghost:hover{border-color:var(--ink-soft);}
+  .hero{padding:56px 0 48px;border-bottom:1px solid var(--line);}
+  .hero-top{display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:start;}
+  .eyebrow{font-family:'JetBrains Mono';font-size:12.5px;color:var(--red);margin-bottom:12px;}
+  .hero h1{font-size:33px;letter-spacing:-0.01em;}
+  .hero .role{color:var(--blue);font-family:'JetBrains Mono';font-weight:500;font-size:14.5px;margin-top:12px;}
+  .hero p{color:var(--ink-soft);margin-top:16px;font-size:15.5px;max-width:52ch;}
+  .hero .links{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;font-size:13.5px;font-weight:500;text-decoration:none;font-family:'JetBrains Mono';border:1px solid var(--ink);color:var(--ink);transition:all .15s;}
+  .btn.primary{background:var(--ink);color:var(--paper);}
+  .btn.primary:hover{background:var(--blue);border-color:var(--blue);}
+  .btn.ghost:hover{border-color:var(--blue);color:var(--blue);}
 
-  .hero-visual{
-    position:relative;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    background:var(--panel);
-    overflow:hidden;
-  }
-  .hero-visual canvas{display:block;width:100%;height:340px;}
-  .hero-visual .tag{
-    position:absolute;top:12px;left:12px;
-    font-size:11px;color:var(--ink-soft);
-    background:rgba(14,17,22,.7);padding:4px 8px;border-radius:2px;
-    border:1px solid var(--line);
-  }
-  .hero-visual .metric{
-    position:absolute;bottom:12px;left:12px;right:12px;
-    display:flex;justify-content:space-between;
-    font-size:12px;color:var(--ink-soft);
-  }
-  .hero-visual .metric b{color:var(--teal);font-weight:600;}
+  .hero-visual{position:relative;border:1px solid var(--line);background:var(--paper-raised);}
+  .hero-visual canvas{display:block;width:100%;height:320px;}
+  .hero-visual .cap{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);line-height:1.5;}
+  .hero-visual .cap b{color:var(--ink);font-weight:600;}
 
-  /* ---------- sections ---------- */
-  section{padding:64px 0;border-bottom:1px solid var(--line);}
+  section{padding:52px 0;border-bottom:1px solid var(--line);}
   section:last-of-type{border-bottom:none;}
-  .section-head{margin-bottom:32px;}
-  .section-head h2{font-size:26px;}
-  .section-head p{color:var(--ink-soft);margin-top:8px;font-size:15px;max-width:60ch;}
+  .section-head{margin-bottom:26px;}
+  .section-head h2{font-size:20px;}
+  .section-head .num{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-soft);margin-bottom:6px;}
 
-  /* ---------- about ---------- */
-  .about-grid{display:grid;grid-template-columns:120px 1fr;gap:28px;align-items:start;}
-  .about-grid img{width:120px;height:120px;border-radius:var(--radius);object-fit:cover;border:1px solid var(--line);}
-  .about-grid .edu{margin-top:18px;font-size:14px;color:var(--ink-soft);}
-  .about-grid .edu div{margin-bottom:4px;}
+  .about-grid{display:grid;grid-template-columns:104px 1fr;gap:26px;align-items:start;}
+  .about-grid img{width:104px;height:104px;object-fit:cover;border:1px solid var(--line);filter:grayscale(25%);}
+  .about-grid .edu{margin-top:16px;font-size:13.5px;color:var(--ink-soft);font-family:'JetBrains Mono';}
+  .about-grid .edu div{margin-bottom:5px;}
   .about-grid .edu b{color:var(--ink);font-weight:500;}
 
-  /* ---------- research ---------- */
-  .research{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:start;}
-  .research .points{margin-top:18px;display:flex;flex-direction:column;gap:14px;}
-  .research .point{display:flex;gap:12px;font-size:14.5px;color:var(--ink-soft);}
-  .research .point .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);margin-top:7px;flex:none;}
-  .research-visual{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);}
-  .research-visual canvas{display:block;width:100%;height:300px;}
-  .research-visual .caption{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);}
+  .skills{display:grid;grid-template-columns:1fr 1fr;gap:22px 36px;}
+  .skill-group.featured{grid-column:1/-1;background:var(--blue-soft);border:1px solid var(--blue);padding:16px 18px;}
+  .skill-group h4{font-family:'JetBrains Mono';font-size:13px;font-weight:600;color:var(--ink);margin-bottom:9px;}
+  .skill-group.featured h4{color:var(--blue);}
+  .skill-group .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .skill-group .chips span{font-size:12px;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);padding:3px 9px;}
+  .skill-group.featured .chips span{background:var(--paper-raised);border-color:var(--blue);color:var(--ink);}
 
-  /* ---------- projects ---------- */
-  .project{
-    display:grid;grid-template-columns:5px 1fr;gap:20px;
-    padding:22px 0;border-top:1px solid var(--line);
-  }
+  .project{display:grid;grid-template-columns:4px 1fr;gap:18px;padding:16px 0;border-top:1px solid var(--line);}
   .project:first-child{border-top:none;}
-  .project .bar{border-radius:2px;}
-  .project .bar.data{background:var(--amber);}
-  .project .bar.vlsi{background:var(--blue);}
-  .project .bar.robo{background:var(--teal);}
-  .project h3{font-size:18px;}
-  .project .meta{color:var(--ink-soft);font-size:13px;margin-top:4px;}
-  .project p{color:var(--ink-soft);font-size:14.5px;margin-top:10px;max-width:68ch;}
-  .project .stats{display:flex;gap:28px;margin-top:14px;flex-wrap:wrap;}
-  .project .stat b{display:block;font-family:'Space Grotesk';font-size:20px;color:var(--ink);}
-  .project .stat span{font-size:12px;color:var(--ink-soft);}
-  .project .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
-  .project .tags span{font-size:12px;color:var(--ink-soft);border:1px solid var(--line);padding:3px 9px;border-radius:12px;}
-  .project .links{margin-top:14px;display:flex;gap:16px;}
-  .project .links a{font-size:13px;color:var(--teal);text-decoration:none;border-bottom:1px solid transparent;}
-  .project .links a:hover{border-bottom-color:var(--teal);}
+  .project .bar.data{background:var(--red);}
+  .project .bar.vlsi{background:var(--sage);}
+  .project .bar.robo{background:var(--blue);}
+  .project-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;}
+  .project h3{font-size:15.5px;font-weight:600;}
+  .project .when{font-family:'JetBrains Mono';font-size:11.5px;color:var(--ink-soft);white-space:nowrap;}
+  .project .line{color:var(--ink-soft);font-size:14px;margin-top:6px;max-width:68ch;}
+  .project .stats{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;}
+  .project .stats span{font-family:'JetBrains Mono';font-size:12px;color:var(--ink);background:var(--paper-raised);border:1px solid var(--line);padding:3px 8px;}
+  .project .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .project .tags span{font-size:11px;color:var(--ink-soft);}
+  .project .tags span::after{content:" ·";color:var(--line);}
+  .project .tags span:last-child::after{content:"";}
+  .project .links{margin-top:8px;display:flex;gap:14px;}
+  .project .links a{font-size:12.5px;color:var(--blue);text-decoration:none;font-family:'JetBrains Mono';}
+  .project .links a:hover{text-decoration:underline;}
 
-  /* ---------- skills ---------- */
-  .skills{display:grid;grid-template-columns:1fr 1fr;gap:24px 40px;}
-  .skill-group h4{font-family:'Space Grotesk';font-size:14px;font-weight:600;color:var(--ink);margin-bottom:10px;}
-  .skill-group .chips{display:flex;flex-wrap:wrap;gap:7px;}
-  .skill-group .chips span{font-size:12.5px;color:var(--ink-soft);background:var(--panel);border:1px solid var(--line);padding:4px 10px;border-radius:2px;}
+  .timeline{display:flex;flex-direction:column;gap:18px;}
+  .tl-item{display:grid;grid-template-columns:120px 1fr;gap:18px;}
+  .tl-item .when{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-soft);padding-top:2px;}
+  .tl-item h4{font-size:14.5px;font-weight:600;}
+  .tl-item .org{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
 
-  /* ---------- experience ---------- */
-  .timeline{position:relative;padding-left:24px;border-left:1px solid var(--line);}
-  .tl-item{position:relative;padding-bottom:28px;}
-  .tl-item:last-child{padding-bottom:0;}
-  .tl-item::before{
-    content:"";position:absolute;left:-29px;top:4px;
-    width:9px;height:9px;border-radius:50%;background:var(--bg);
-    border:2px solid var(--amber);
-  }
-  .tl-item .when{font-size:12px;color:var(--ink-soft);}
-  .tl-item h4{font-family:'Space Grotesk';font-size:15.5px;font-weight:600;margin-top:4px;}
-  .tl-item .org{font-size:13.5px;color:var(--ink-soft);margin-top:2px;}
-  .tl-item p{font-size:14px;color:var(--ink-soft);margin-top:8px;max-width:66ch;}
-
-  /* ---------- contact ---------- */
-  .contact-row{display:flex;gap:28px;flex-wrap:wrap;margin-top:20px;}
-  .contact-row a{font-size:15px;text-decoration:none;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:3px;transition:border-color .15s,color .15s;}
-  .contact-row a:hover{color:var(--amber);border-color:var(--amber);}
-  footer{padding:28px 0;text-align:center;font-size:12.5px;color:var(--ink-soft);}
+  .resume-box{border:1px solid var(--ink);background:var(--paper-raised);padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .resume-box .t{font-family:'JetBrains Mono';font-size:13.5px;}
+  .resume-box .t span{color:var(--ink-soft);display:block;font-size:12px;margin-top:3px;}
+  .contact-row{display:flex;gap:24px;flex-wrap:wrap;margin-top:18px;}
+  .contact-row a{font-size:14px;text-decoration:none;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:3px;font-family:'JetBrains Mono';transition:border-color .15s,color .15s;}
+  .contact-row a:hover{color:var(--blue);border-color:var(--blue);}
+  footer{padding:24px 0 24px 52px;text-align:left;font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono';}
 
   @media (max-width:820px){
-    .wrap{padding:0 20px;}
+    .wrap{padding:0 20px 0 36px;}
+    .wrap::before{left:16px;}
     nav ul{display:none;}
-    .hero{grid-template-columns:1fr;padding-top:48px;}
-    .research{grid-template-columns:1fr;}
+    .hero-top{grid-template-columns:1fr;}
     .about-grid{grid-template-columns:1fr;}
     .skills{grid-template-columns:1fr;}
-    .hero h1{font-size:32px;}
+    .tl-item{grid-template-columns:1fr;}
+    .hero h1{font-size:27px;}
   }
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-  }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
 </style>
 </head>
 <body>
 
 <nav>
   <div class="wrap">
-    <div class="mark">Krishna Mowli<span>.</span></div>
+    <div class="markname">krishna_mowli<span class="dot">.</span></div>
     <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#research">Research</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#experience">Experience</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#about">about</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#contact">contact</a></li>
     </ul>
   </div>
 </nav>
 
 <header class="wrap hero">
-  <div>
-    <h1>Systems that stay stable&nbsp;—<br/>even when the world doesn't.</h1>
-    <div class="role">M.Tech, Systems &amp; Control · IIT Hyderabad</div>
-    <p>I work across control theory, multi-robot coordination, VLSI design, and data-driven analytics — building systems with provable guarantees, from distributed robot swarms to statistical models that hold up under scrutiny.</p>
-    <div class="links">
-      <a class="btn primary" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
-      <a class="btn ghost" href="#projects">See projects</a>
-      <a class="btn ghost" href="https://github.com/KrishnaMowli" target="_blank" rel="noopener">GitHub</a>
+  <div class="hero-top">
+    <div>
+      <div class="eyebrow">// systems &amp; control, iit hyderabad</div>
+      <h1>Making distributed systems provably safe under uncertainty.</h1>
+      <p>M.Tech, Systems and Control. I work on multi-robot coordination, stochastic processes, and control theory — currently researching probabilistic collision-avoidance guarantees for robot swarms that move, sense, and communicate under noise.</p>
+      <div class="links">
+        <a class="btn primary" href="assets/resume.pdf" target="_blank" rel="noopener">resume →</a>
+        <a class="btn ghost" href="#projects">projects</a>
+        <a class="btn ghost" href="https://github.com/KrishnaMowli" target="_blank" rel="noopener">github</a>
+      </div>
     </div>
-  </div>
-  <div class="hero-visual">
-    <span class="tag">Illustrative simulation</span>
-    <canvas id="heroSim"></canvas>
-    <div class="metric">
-      <span>agents: <b id="heroCount">6</b></span>
-      <span>min clearance: <b id="heroClearance">—</b></span>
-      <span>consensus error: <b id="heroError">—</b></span>
+    <div class="hero-visual">
+      <canvas id="sim"></canvas>
+      <div class="cap"><b>Stochastic multi-agent consensus — illustrative.</b> Each agent follows a smooth consensus policy (reinforcement-learning-style convergence) perturbed by process noise (a stochastic process), while a probabilistic clearance bound — the idea behind Cantelli's inequality — is kept between every pair.</div>
     </div>
   </div>
 </header>
 
 <section id="about" class="wrap">
-  <div class="section-head">
-    <h2>About</h2>
-  </div>
+  <div class="section-head"><div class="num">01</div><h2>About</h2></div>
   <div class="about-grid">
     <img src="assets/photo.png" alt="Krishna Mowli" />
     <div>
-      <p class="prose">G V S S Krishna Mowli. Currently an M.Tech student in Systems and Control at IIT Hyderabad, working on distributed multi-robot coordination under uncertainty. Before this, a B.Tech in Electronics &amp; Communication Engineering at NIT Tiruchirappalli, where I worked across analog IC design, FPGA/DSP hardware, and device physics. My work sits at the intersection of control theory, robotics, and data — I like problems where you have to prove something holds, not just hope it does.</p>
+      <p class="prose">G V S S Krishna Mowli. M.Tech student in Systems and Control at IIT Hyderabad, previously B.Tech in Electronics &amp; Communication Engineering at NIT Tiruchirappalli. My work moves between control theory, probability &amp; stochastic processes, multi-robot systems, and — before grad school — analog/digital VLSI design. I'm drawn to problems where you have to prove a guarantee holds, not just observe that it usually does.</p>
       <div class="edu">
-        <div><b>M.Tech, Systems and Control</b> — IIT Hyderabad, 2027 (CGPA 9.0)</div>
-        <div><b>B.Tech, Electronics &amp; Communication Engineering</b> — NIT Tiruchirappalli, 2025 (8.32)</div>
+        <div><b>M.Tech, Systems and Control</b> — IIT Hyderabad, 2027 · CGPA 9.0</div>
+        <div><b>B.Tech, Electronics &amp; Communication Engineering</b> — NIT Tiruchirappalli, 2025 · 8.32</div>
       </div>
-    </div>
-  </div>
-</section>
-
-<section id="research" class="wrap">
-  <div class="section-head">
-    <h2>Current research</h2>
-    <p>M.Tech thesis — ongoing, June 2026 – present.</p>
-  </div>
-  <div class="research">
-    <div>
-      <h3 style="font-size:19px;">Distributed consensus in multi-robot systems, with collision &amp; obstacle avoidance</h3>
-      <div class="points">
-        <div class="point"><span class="dot"></span>Decentralized multi-robot consensus using weighted graph interactions and Laplacian-based coordination for distributed position agreement and collective field estimation.</div>
-        <div class="point"><span class="dot"></span>Probabilistic collision-avoidance guarantees via Control Barrier Functions, process-noise modeling, and Cantelli's inequality — bounding pairwise safety violations rather than just hoping they don't happen.</div>
-        <div class="point"><span class="dot"></span>Pointwise and mission-horizon safety bounds, extending the guarantee from individual robot pairs to the full multi-robot team, with a fixed minimum clearance.</div>
-        <div class="point"><span class="dot"></span>Gradient-based field estimation integrated with distributed coordination for decentralized multi-robot motion, validated against empirical collision probabilities via Monte Carlo simulation.</div>
-      </div>
-    </div>
-    <div class="research-visual">
-      <canvas id="researchSim"></canvas>
-      <div class="caption">A simplified illustration of the core idea — not a reproduction of thesis results. Agents reach consensus on a shared estimate while a barrier-function-style repulsion keeps every pair above a minimum clearance.</div>
     </div>
   </div>
 </section>
 
 <section id="projects" class="wrap">
-  <div class="section-head">
-    <h2>Selected projects</h2>
-    <p>Across data analytics, VLSI/circuit design, and robotics &amp; control.</p>
+  <div class="section-head"><div class="num">02</div><h2>Selected work</h2></div>
+
+  <div class="project">
+    <div class="bar robo"></div>
+    <div>
+      <div class="project-row"><h3>Distributed Consensus in Multi-Robot Systems with Collision &amp; Obstacle Avoidance</h3><span class="when">Jun 2026 – present · M.Tech thesis</span></div>
+      <div class="line">Probabilistic collision-avoidance guarantees for robot swarms, combining Laplacian-based consensus with Control Barrier Functions and Cantelli's inequality to bound pairwise safety violations.</div>
+      <div class="stats"><span>graph consensus</span><span>CBFs</span><span>probabilistic safety bounds</span></div>
+    </div>
   </div>
 
   <div class="project">
     <div class="bar data"></div>
     <div>
-      <h3>Customer Churn Prediction &amp; Segmentation</h3>
-      <div class="meta">Sep – Oct 2026 · Python, SQL, scikit-learn, Streamlit</div>
-      <p>End-to-end churn prediction and customer segmentation pipeline on 7,000+ telco customers — leakage-safe modeling, K-Means segmentation, and statistical validation via bootstrap confidence intervals and Cox survival analysis.</p>
-      <div class="stats">
-        <div class="stat"><b>0.839</b><span>ROC-AUC (95% CI 0.815–0.860)</span></div>
-        <div class="stat"><b>68%</b><span>of lost revenue from 28% of customers</span></div>
-        <div class="stat"><b>2.5×</b><span>lift over random targeting</span></div>
-      </div>
+      <div class="project-row"><h3>Customer Churn Prediction &amp; Segmentation</h3><span class="when">Sep – Oct 2026</span></div>
+      <div class="line">End-to-end churn pipeline on 7,000+ telco customers — leakage-safe modeling, K-Means segmentation, bootstrap &amp; survival-validated.</div>
+      <div class="stats"><span>0.839 ROC-AUC</span><span>68% of lost revenue isolated</span></div>
       <div class="tags"><span>Python</span><span>SQL</span><span>scikit-learn</span><span>Streamlit</span></div>
       <div class="links">
-        <a href="https://github.com/KrishnaMowli/customer-churn-segmentation" target="_blank" rel="noopener">GitHub →</a>
-        <a href="https://customer-churn-segmentation-brwjvzibugtksqfmaefzh8.streamlit.app/" target="_blank" rel="noopener">Live dashboard →</a>
+        <a href="https://github.com/KrishnaMowli/customer-churn-segmentation" target="_blank" rel="noopener">repo</a>
+        <a href="https://customer-churn-segmentation-brwjvzibugtksqfmaefzh8.streamlit.app/" target="_blank" rel="noopener">live dashboard</a>
       </div>
     </div>
   </div>
@@ -293,13 +221,8 @@
   <div class="project">
     <div class="bar robo"></div>
     <div>
-      <h3>Resilient Multi-Agent Coordination using Federated Reinforcement Learning</h3>
-      <div class="meta">Jan – May 2026 · Reinforcement Learning, Robotics, Distributed Control</div>
-      <p>Decentralized multi-agent coordination framework coupling Federated PPO with Age-of-Information-aware state prediction for resilient swarm consensus over lossy communication channels.</p>
-      <div class="stats">
-        <div class="stat"><b>DCBFs</b><span>+ differential games for provable collision avoidance</span></div>
-        <div class="stat"><b>Heterogeneous</b><span>robotic swarms, lossy &amp; delayed networks</span></div>
-      </div>
+      <div class="project-row"><h3>Resilient Multi-Agent Coordination via Federated Reinforcement Learning</h3><span class="when">Jan – May 2026</span></div>
+      <div class="line">Federated PPO coupled with Age-of-Information-aware state prediction for swarm consensus over lossy, delayed communication channels.</div>
       <div class="tags"><span>Federated PPO</span><span>Control Barrier Functions</span><span>Swarm Robotics</span></div>
     </div>
   </div>
@@ -307,299 +230,214 @@
   <div class="project">
     <div class="bar vlsi"></div>
     <div>
-      <h3>Ultra-Low-Power MPPT Architecture for Battery-less IoT Energy Harvesting</h3>
-      <div class="meta">Jan – May 2025 · Cadence Virtuoso, UMC 45nm CMOS</div>
-      <p>Architected a Time-to-Voltage Controlled Boost Converter with an adaptive step-size Hill-Climbing controller (VCO-based perturbation) for photovoltaic energy harvesting in battery-less wireless IoT sensor nodes.</p>
-      <div class="stats">
-        <div class="stat"><b>99.9985%</b><span>verified MPPT tracking efficiency</span></div>
-        <div class="stat"><b>45nm</b><span>CMOS, post-layout verified</span></div>
-      </div>
-      <div class="tags"><span>Analog IC Design</span><span>Cadence Virtuoso</span><span>CMOS</span></div>
-      <div class="links">
-        <a href="https://github.com/KrishnaMowli/Ultra-Low-Power-MPPT-Architecture" target="_blank" rel="noopener">GitHub →</a>
-      </div>
+      <div class="project-row"><h3>Ultra-Low-Power MPPT Architecture for Battery-less IoT</h3><span class="when">Jan – May 2025</span></div>
+      <div class="line">Time-to-Voltage boost converter with an adaptive hill-climbing controller, verified in 45nm CMOS post-layout simulation.</div>
+      <div class="stats"><span>99.9985% tracking efficiency</span></div>
+      <div class="tags"><span>Cadence Virtuoso</span><span>Analog IC Design</span></div>
+      <div class="links"><a href="https://github.com/KrishnaMowli/Ultra-Low-Power-MPPT-Architecture" target="_blank" rel="noopener">repo</a></div>
     </div>
   </div>
 
   <div class="project">
     <div class="bar vlsi"></div>
     <div>
-      <h3>Fault-Tolerant Turbo Decoder for SRAM-Based FPGAs</h3>
-      <div class="meta">Apr – May 2024 · Verilog, Xilinx Vivado, Digital VLSI</div>
-      <p>Radiation-tolerant Turbo Decoder architecture mitigating Single Event Upsets across configuration memory and user logic, using a Duplication-With-Comparison framework tracking LLR confidence metrics — lower area overhead than TMR.</p>
-      <div class="stats">
-        <div class="stat"><b>DWC vs TMR</b><span>significantly lower hardware overhead</span></div>
-        <div class="stat"><b>Aerospace</b><span>mission-critical reliability target</span></div>
-      </div>
-      <div class="tags"><span>Verilog</span><span>FPGA</span><span>Fault Tolerance</span></div>
+      <div class="project-row"><h3>Fault-Tolerant Turbo Decoder for SRAM-Based FPGAs</h3><span class="when">Apr – May 2024</span></div>
+      <div class="line">Radiation-tolerant decoder mitigating Single Event Upsets via Duplication-With-Comparison — lower overhead than TMR, aimed at aerospace reliability.</div>
+      <div class="tags"><span>Verilog</span><span>Vivado</span><span>FPGA</span></div>
     </div>
   </div>
 
   <div class="project">
     <div class="bar robo"></div>
     <div>
-      <h3>GenAI-Enabled Task Planning &amp; Dynamic Allocation for Heterogeneous Autonomous Agents</h3>
-      <div class="meta">Aug – Sep 2026 · Python, LLMs, Optimization, Multi-Agent Simulation</div>
-      <p>A generative-AI planning framework translating natural-language missions into structured, dependency-aware subtasks, with optimization-based task allocation and event-driven replanning when agents fail or conditions change.</p>
-      <div class="stats">
-        <div class="stat"><b>Event-driven</b><span>replanning on agent failure</span></div>
-        <div class="stat"><b>Benchmarked</b><span>vs rule-based baselines</span></div>
-      </div>
-      <div class="tags"><span>LLMs</span><span>Task Allocation</span><span>Multi-Agent Simulation</span></div>
+      <div class="project-row"><h3>Direct Data-Driven Optimal Control of Dynamic Systems</h3><span class="when">Mar – Apr 2026</span></div>
+      <div class="line">LQR synthesis directly from data via Lyapunov-based LMIs, skipping explicit system identification entirely.</div>
+      <div class="stats"><span>&lt;2% error vs. model-based benchmark</span></div>
+      <div class="tags"><span>MATLAB</span><span>LMI</span></div>
     </div>
   </div>
 
   <div class="project">
     <div class="bar robo"></div>
     <div>
-      <h3>Direct Data-Driven Optimal Control of Dynamic Systems</h3>
-      <div class="meta">Mar – Apr 2026 · MATLAB, LMI Optimization</div>
-      <p>A direct data-driven LQR controller that eliminates explicit system identification, using Lyapunov-based LMIs and Schur complements to guarantee mean-square closed-loop stability under stochastic disturbances.</p>
-      <div class="stats">
-        <div class="stat"><b>500</b><span>Monte Carlo trials</span></div>
-        <div class="stat"><b>&lt;2%</b><span>error vs. model-based NSMLQR benchmark</span></div>
-      </div>
-      <div class="tags"><span>Data-Driven Control</span><span>LMI</span><span>MATLAB</span></div>
+      <div class="project-row"><h3>GenAI-Enabled Task Planning for Heterogeneous Autonomous Agents</h3><span class="when">Aug – Sep 2026</span></div>
+      <div class="line">LLM-based mission planner producing dependency-aware subtasks, with optimization-based allocation and event-driven replanning on failure.</div>
+      <div class="tags"><span>LLMs</span><span>Multi-Agent Simulation</span></div>
     </div>
   </div>
 
 </section>
 
 <section id="skills" class="wrap">
-  <div class="section-head">
-    <h2>Skills</h2>
-  </div>
+  <div class="section-head"><div class="num">03</div><h2>Skills</h2></div>
   <div class="skills">
-    <div class="skill-group">
-      <h4>Control, optimization &amp; systems</h4>
-      <div class="chips"><span>Control Theory</span><span>State-Space Modeling</span><span>LQR / MPC</span><span>Optimal Control</span><span>Robust &amp; Adaptive Control</span><span>Distributed Control</span><span>Kalman Filter</span><span>Lyapunov Stability</span><span>Convex Optimization (QP/SOCP/LMI)</span><span>Dynamic Programming</span></div>
+    <div class="skill-group featured">
+      <h4>Probability, stochastic processes &amp; RL</h4>
+      <div class="chips"><span>Stochastic Processes</span><span>Probability Theory</span><span>Reinforcement Learning</span><span>PPO</span><span>Federated Learning</span><span>Monte Carlo Simulation</span><span>Convex Optimization (QP/SOCP/LMI)</span></div>
     </div>
     <div class="skill-group">
-      <h4>Robotics, AI &amp; machine learning</h4>
-      <div class="chips"><span>Multi-Agent Systems</span><span>Swarm Robotics</span><span>Reinforcement Learning</span><span>Federated Learning</span><span>PPO</span><span>PyTorch</span><span>scikit-learn</span></div>
+      <h4>Control &amp; systems</h4>
+      <div class="chips"><span>Control Theory</span><span>LQR / MPC</span><span>Optimal Control</span><span>Robust &amp; Adaptive Control</span><span>Distributed Control</span><span>Kalman Filter</span><span>Lyapunov Stability</span></div>
     </div>
     <div class="skill-group">
       <h4>VLSI, FPGA &amp; semiconductor</h4>
-      <div class="chips"><span>Digital VLSI</span><span>Analog IC Design</span><span>CMOS / PDSOI</span><span>FPGA / RTL Design</span><span>Verilog</span><span>Cadence Virtuoso</span><span>Vivado</span><span>Sentaurus TCAD</span></div>
+      <div class="chips"><span>Digital VLSI</span><span>Analog IC Design</span><span>CMOS / PDSOI</span><span>Verilog</span><span>Cadence Virtuoso</span><span>Vivado</span></div>
     </div>
     <div class="skill-group">
       <h4>Programming &amp; tools</h4>
-      <div class="chips"><span>Python</span><span>MATLAB</span><span>ROS / Gazebo</span><span>C</span><span>SQL</span><span>Git</span><span>Linux</span></div>
+      <div class="chips"><span>Python</span><span>MATLAB</span><span>ROS / Gazebo</span><span>SQL</span><span>PyTorch</span><span>scikit-learn</span></div>
     </div>
   </div>
 </section>
 
 <section id="experience" class="wrap">
-  <div class="section-head">
-    <h2>Experience &amp; responsibility</h2>
-  </div>
+  <div class="section-head"><div class="num">04</div><h2>Experience</h2></div>
   <div class="timeline">
-    <div class="tl-item">
-      <div class="when">Aug 2025 – present</div>
-      <h4>Teaching Assistant, Control Systems</h4>
-      <div class="org">IIT Hyderabad</div>
-      <p>Guided students through course assignments and academic activities; supported examinations, invigilation, and evaluation under the faculty instructor.</p>
-    </div>
-    <div class="tl-item">
-      <div class="when">Jun 2026 – present</div>
-      <h4>Placement Coordinator, Systems &amp; Control</h4>
-      <div class="org">IIT Hyderabad</div>
-      <p>Primary liaison between recruiters, students, faculty, and the Institute Placement Office for the Systems &amp; Control specialization.</p>
-    </div>
-    <div class="tl-item">
-      <div class="when">Dec 2023 – Jan 2024</div>
-      <h4>FPGA &amp; DSP Design Research Intern</h4>
-      <div class="org">NIT Tiruchirappalli — Guide: Dr. G. Lakshminarayanan</div>
-      <p>Designed and verified a 4-level pipelined architecture and Braun multiplier on a Xilinx Artix-7 FPGA; developed Verilog-based DSP processor modules with self-checking RTL testbenches.</p>
-    </div>
-    <div class="tl-item">
-      <div class="when">Jun – Jul 2024</div>
-      <h4>PDSOI–MOS Design Research Intern</h4>
-      <div class="org">IIT Roorkee — Guide: Dr. B. Anand Bulusu</div>
-      <p>Studied floating-body and self-heating effects in Partially Depleted SOI MOSFETs; performed I–V and C–V characterization in Sentaurus TCAD and simulated CMOS circuits comparing PDSOI with bulk MOSFET implementations.</p>
-    </div>
-    <div class="tl-item">
-      <div class="when">Dec 2022 – Jan 2023</div>
-      <h4>Image Processing &amp; CNN Internship</h4>
-      <div class="org">NIT Tiruchirappalli — Guide: Dr. P. Palanisamy</div>
-      <p>Explored image classification with PyTorch (VGG19, ResNet18) on FER2013/CK+; engineered HOG, LBP and colour-histogram features for an ASD dataset, evaluating SVM and Random Forest classifiers.</p>
-    </div>
-    <div class="tl-item">
-      <div class="when">Mar – May 2022</div>
-      <h4>IoT Systems Intern, RINEX</h4>
-      <div class="org">IIT Roorkee &amp; IIT Bhubaneswar</div>
-      <p>Built an Arduino-based RC car and a Telegram-integrated IoT chatbot for remote light control; explored speech-to-text and ThingSpeak for voice control and data visualization.</p>
-    </div>
+    <div class="tl-item"><div class="when">2025–present</div><div><h4>Teaching Assistant, Control Systems</h4><div class="org">IIT Hyderabad</div></div></div>
+    <div class="tl-item"><div class="when">2026–present</div><div><h4>Placement Coordinator, Systems &amp; Control</h4><div class="org">IIT Hyderabad</div></div></div>
+    <div class="tl-item"><div class="when">2023–24</div><div><h4>FPGA &amp; DSP Design Research Intern</h4><div class="org">NIT Tiruchirappalli — Dr. G. Lakshminarayanan</div></div></div>
+    <div class="tl-item"><div class="when">2024</div><div><h4>PDSOI–MOS Design Research Intern</h4><div class="org">IIT Roorkee — Dr. B. Anand Bulusu</div></div></div>
+    <div class="tl-item"><div class="when">2022–23</div><div><h4>Image Processing &amp; CNN Research Intern</h4><div class="org">NIT Tiruchirappalli — Dr. P. Palanisamy</div></div></div>
+    <div class="tl-item"><div class="when">2022</div><div><h4>IoT Systems Intern, RINEX</h4><div class="org">IIT Roorkee &amp; IIT Bhubaneswar</div></div></div>
   </div>
 </section>
 
 <section id="contact" class="wrap">
-  <div class="section-head">
-    <h2>Get in touch</h2>
-    <p>Open to research and engineering roles in control systems, robotics, and data science.</p>
+  <div class="section-head"><div class="num">05</div><h2>Resume &amp; contact</h2></div>
+  <div class="resume-box">
+    <div class="t">Master_CV.pdf<span>full academic record, achievements, certifications, and complete project detail</span></div>
+    <a class="btn primary" href="assets/resume.pdf" target="_blank" rel="noopener">open resume →</a>
   </div>
   <div class="contact-row">
     <a href="mailto:krishnamowli003@gmail.com">krishnamowli003@gmail.com</a>
-    <a href="https://www.linkedin.com/in/krishna-mowli" target="_blank" rel="noopener">LinkedIn</a>
-    <a href="https://github.com/KrishnaMowli" target="_blank" rel="noopener">GitHub</a>
-    <a href="assets/resume.pdf" target="_blank" rel="noopener">Resume (PDF)</a>
+    <a href="https://www.linkedin.com/in/krishna-mowli" target="_blank" rel="noopener">linkedin</a>
+    <a href="https://github.com/KrishnaMowli" target="_blank" rel="noopener">github</a>
   </div>
 </section>
 
-<footer class="wrap">
-  © 2026 Krishna Mowli. Built with intent, not a template.
-</footer>
+<footer class="wrap">© 2026 krishna mowli</footer>
 
 <script>
 (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.getElementById('sim');
+  const ctx = canvas.getContext('2d');
+  let W, H, dpr;
+  function resize(){
+    dpr = window.devicePixelRatio || 1;
+    W = canvas.clientWidth; H = canvas.clientHeight;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.fillStyle = '#F6F7F9';
+    ctx.fillRect(0,0,W,H);
+  }
+  window.addEventListener('resize', resize);
+  resize();
 
-  function makeSim(canvasId, opts){
-    const canvas = document.getElementById(canvasId);
-    if(!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let W, H, dpr;
-    function resize(){
-      dpr = window.devicePixelRatio || 1;
-      W = canvas.clientWidth; H = canvas.clientHeight;
-      canvas.width = W*dpr; canvas.height = H*dpr;
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    window.addEventListener('resize', resize);
-    resize();
+  const N = 7;
+  const commRadius = 150;
+  const safety = 42;
+  const agents = [];
+  for(let i=0;i<N;i++){
+    const angle = (i/N)*Math.PI*2;
+    agents.push({
+      tx: W/2 + Math.cos(angle)*120, ty: H/2 + Math.sin(angle)*90,
+      vx:0, vy:0,
+      ox:0, oy:0,
+      hue: 208 + (i*6)
+    });
+  }
+  const obstacle = {x:0.28, y:0.72, r:30};
 
-    const N = opts.n;
-    const safety = opts.safety;
-    const commRadius = opts.commRadius;
-    const agents = [];
+  function step(){
     for(let i=0;i<N;i++){
-      agents.push({
-        x: Math.random()*W, y: Math.random()*H,
-        vx:0, vy:0
-      });
-    }
-    const obstacles = opts.obstacles ? opts.obstacles.map(o => ({xr:o[0], yr:o[1], r:o[2]})) : [];
-
-    function step(){
-      // consensus: move toward average of neighbors within comm radius
-      for(let i=0;i<N;i++){
-        let sx=0, sy=0, cnt=0;
-        for(let j=0;j<N;j++){
-          if(i===j) continue;
-          const dx = agents[j].x-agents[i].x, dy = agents[j].y-agents[i].y;
-          const d = Math.hypot(dx,dy);
-          if(d < commRadius){ sx += dx; sy += dy; cnt++; }
-        }
-        let fx=0, fy=0;
-        if(cnt>0){ fx = (sx/cnt)*0.002; fy = (sy/cnt)*0.002; }
-
-        // pairwise repulsion (collision avoidance, CBF-style)
-        for(let j=0;j<N;j++){
-          if(i===j) continue;
-          const dx = agents[i].x-agents[j].x, dy = agents[i].y-agents[j].y;
-          const d = Math.hypot(dx,dy) || 0.001;
-          if(d < safety){
-            const push = (safety-d)/safety * 0.35;
-            fx += (dx/d)*push; fy += (dy/d)*push;
-          }
-        }
-        // obstacle repulsion
-        obstacles.forEach(o=>{
-          const ox = o.xr*W, oy = o.yr*H, orad = o.r;
-          const dx = agents[i].x-ox, dy = agents[i].y-oy;
-          const d = Math.hypot(dx,dy) || 0.001;
-          if(d < orad + safety){
-            const push = (orad+safety-d)/(orad+safety) * 0.45;
-            fx += (dx/d)*push; fy += (dy/d)*push;
-          }
-        });
-
-        agents[i].vx = agents[i].vx*0.85 + fx;
-        agents[i].vy = agents[i].vy*0.85 + fy;
+      let sx=0, sy=0, cnt=0;
+      for(let j=0;j<N;j++){
+        if(i===j) continue;
+        const dx = agents[j].tx-agents[i].tx, dy = agents[j].ty-agents[i].ty;
+        const d = Math.hypot(dx,dy);
+        if(d < commRadius){ sx+=dx; sy+=dy; cnt++; }
       }
-      let minD = Infinity, sx=0, sy=0;
-      for(let i=0;i<N;i++){
-        agents[i].x += agents[i].vx;
-        agents[i].y += agents[i].vy;
-        agents[i].x = Math.max(14, Math.min(W-14, agents[i].x));
-        agents[i].y = Math.max(14, Math.min(H-14, agents[i].y));
-        sx += agents[i].x; sy += agents[i].y;
-        for(let j=i+1;j<N;j++){
-          const d = Math.hypot(agents[i].x-agents[j].x, agents[i].y-agents[j].y);
-          if(d<minD) minD = d;
-        }
+      let fx=0, fy=0;
+      if(cnt>0){ fx=(sx/cnt)*0.0016; fy=(sy/cnt)*0.0016; }
+      for(let j=0;j<N;j++){
+        if(i===j) continue;
+        const dx = agents[i].tx-agents[j].tx, dy = agents[i].ty-agents[j].ty;
+        const d = Math.hypot(dx,dy) || 0.001;
+        if(d < safety){ const p=(safety-d)/safety*0.3; fx+=(dx/d)*p; fy+=(dy/d)*p; }
       }
-      const cx = sx/N, cy = sy/N;
-      let spread = 0;
-      for(let i=0;i<N;i++){ spread += Math.hypot(agents[i].x-cx, agents[i].y-cy); }
-      spread /= N;
-      return {minD, spread};
-    }
+      const ox = obstacle.x*W, oy = obstacle.y*H;
+      const dx = agents[i].tx-ox, dy = agents[i].ty-oy;
+      const d = Math.hypot(dx,dy) || 0.001;
+      if(d < obstacle.r+safety){ const p=(obstacle.r+safety-d)/(obstacle.r+safety)*0.4; fx+=(dx/d)*p; fy+=(dy/d)*p; }
 
-    function draw(stats){
-      ctx.clearRect(0,0,W,H);
-      // obstacles
-      ctx.fillStyle = 'rgba(139,149,165,0.14)';
-      ctx.strokeStyle = 'rgba(139,149,165,0.35)';
-      obstacles.forEach(o=>{
-        ctx.beginPath();
-        ctx.arc(o.xr*W, o.yr*H, o.r, 0, Math.PI*2);
-        ctx.fill(); ctx.stroke();
-      });
-      // comm graph edges
-      ctx.strokeStyle = 'rgba(92,159,214,0.28)';
-      ctx.lineWidth = 1;
-      for(let i=0;i<N;i++){
-        for(let j=i+1;j<N;j++){
-          const d = Math.hypot(agents[i].x-agents[j].x, agents[i].y-agents[j].y);
-          if(d < commRadius){
-            ctx.beginPath();
-            ctx.moveTo(agents[i].x, agents[i].y);
-            ctx.lineTo(agents[j].x, agents[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-      // agents
-      agents.forEach(a=>{
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, 7, 0, Math.PI*2);
-        ctx.fillStyle = '#4FB8A6';
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, 11, 0, Math.PI*2);
-        ctx.strokeStyle = 'rgba(79,184,166,0.35)';
-        ctx.stroke();
-      });
-    }
+      agents[i].vx = agents[i].vx*0.9 + fx;
+      agents[i].vy = agents[i].vy*0.9 + fy;
+      agents[i].tx += agents[i].vx;
+      agents[i].ty += agents[i].vy;
+      agents[i].tx = Math.max(16, Math.min(W-16, agents[i].tx));
+      agents[i].ty = Math.max(16, Math.min(H-16, agents[i].ty));
 
-    let frame = 0;
-    function loop(){
-      const stats = step();
-      draw(stats);
-      if(opts.onStats) opts.onStats(stats);
-      frame++;
-      if(!reduceMotion){
-        requestAnimationFrame(loop);
-      } else if(frame < 2){
-        requestAnimationFrame(loop);
-      }
+      agents[i].ox = agents[i].ox*0.88 + (Math.random()-0.5)*3.2;
+      agents[i].oy = agents[i].oy*0.88 + (Math.random()-0.5)*3.2;
     }
-    loop();
+    let minD = Infinity;
+    for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
+      const d = Math.hypot(agents[i].tx-agents[j].tx, agents[i].ty-agents[j].ty);
+      if(d<minD) minD=d;
+    }
+    return minD;
   }
 
-  makeSim('heroSim', {
-    n:6, safety:46, commRadius:160,
-    onStats: (s)=>{
-      document.getElementById('heroClearance').textContent = s.minD.toFixed(0)+'px';
-      document.getElementById('heroError').textContent = s.spread.toFixed(0)+'px';
-    }
-  });
+  function draw(){
+    ctx.fillStyle = 'rgba(246,247,249,0.14)';
+    ctx.fillRect(0,0,W,H);
 
-  makeSim('researchSim', {
-    n:8, safety:40, commRadius:150,
-    obstacles: [[0.3,0.35,34],[0.72,0.65,40]]
-  });
+    ctx.beginPath();
+    ctx.arc(obstacle.x*W, obstacle.y*H, obstacle.r, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(165,54,42,0.08)';
+    ctx.strokeStyle = 'rgba(165,54,42,0.4)';
+    ctx.fill(); ctx.stroke();
+
+    ctx.lineWidth = 1;
+    for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
+      const d = Math.hypot(agents[i].tx-agents[j].tx, agents[i].ty-agents[j].ty);
+      if(d < commRadius){
+        ctx.strokeStyle = 'rgba(32,86,168,'+(0.22*(1-d/commRadius)+0.05)+')';
+        ctx.beginPath();
+        ctx.moveTo(agents[i].tx+agents[i].ox, agents[i].ty+agents[i].oy);
+        ctx.lineTo(agents[j].tx+agents[j].ox, agents[j].ty+agents[j].oy);
+        ctx.stroke();
+      }
+    }
+
+    agents.forEach(a=>{
+      const dx = a.tx+a.ox, dy = a.ty+a.oy;
+      ctx.beginPath();
+      ctx.arc(dx, dy, 3.2, 0, Math.PI*2);
+      ctx.fillStyle = `hsl(${a.hue} 55% 38%)`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(a.tx, a.ty, 1.4, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(22,32,46,0.5)';
+      ctx.fill();
+    });
+
+    const t = performance.now()/600;
+    const pulse = (Math.sin(t)+1)/2;
+    ctx.strokeStyle = `rgba(165,54,42,${0.15+0.25*pulse})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(W/2, H-18, 4+pulse*2, 0, Math.PI*2);
+    ctx.stroke();
+  }
+
+  function loop(){
+    step();
+    draw();
+    if(!reduceMotion) requestAnimationFrame(loop);
+  }
+  if(reduceMotion){ draw(); } else { loop(); }
 })();
 </script>
 
