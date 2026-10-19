@@ -11,16 +11,16 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper: #ECEEF2;
-    --paper-raised: #F6F7F9;
-    --grid: #D7DBE3;
-    --line: #C7CCD6;
-    --ink: #16202E;
-    --ink-soft: #596273;
-    --blue: #2056A8;
-    --blue-soft: #D7E2F2;
-    --red: #A5362A;
-    --sage: #4B6F5C;
+    --paper: #16181A;
+    --paper-raised: #1D1F1D;
+    --grid: #2B2D27;
+    --line: #38392F;
+    --ink: #E7E3D3;
+    --ink-soft: #9B9985;
+    --blue: #AE8B4E;
+    --blue-soft: #2A2518;
+    --red: #B23B2A;
+    --sage: #5B6B52;
     --maxw: 700px;
   }
   *{box-sizing:border-box;}
@@ -28,8 +28,9 @@
   body{
     margin:0;
     background:
-      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 32px,
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/32px 100%,
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 34px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/34px 100%,
+      radial-gradient(ellipse at 20% 0%, rgba(178,59,42,0.05), transparent 55%),
       var(--paper);
     background-attachment:local;
     color:var(--ink);
@@ -48,11 +49,11 @@
   a{color:inherit;}
   .wrap{max-width:1180px;margin:0 auto;padding:0 32px 0 52px;position:relative;}
   .wrap::before{
-    content:"";position:absolute;left:28px;top:0;bottom:0;width:1px;background:rgba(165,54,42,0.35);
+    content:"";position:absolute;left:28px;top:0;bottom:0;width:1px;background:rgba(178,59,42,0.35);
   }
   .prose{max-width:var(--maxw);}
 
-  nav{position:sticky;top:0;z-index:50;background:rgba(236,238,242,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav{position:sticky;top:0;z-index:50;background:rgba(22,24,26,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
   nav .wrap::before{display:none;}
   nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;padding-left:32px;}
   nav .markname{font-family:'JetBrains Mono';font-weight:600;font-size:14.5px;}
@@ -66,11 +67,11 @@
   .hero canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
   .hero-inner{position:relative;z-index:2;padding:56px 0 40px;width:100%;pointer-events:none;}
   .hero-text{
-    max-width:560px;background:rgba(236,238,242,0.38);backdrop-filter:blur(2px);
+    max-width:560px;background:rgba(22,24,26,0.38);backdrop-filter:blur(2px);
     padding:22px 26px;border:1px solid var(--line);pointer-events:auto;
   }
   .hero-text h1, .hero-text p, .hero-text .eyebrow, .hero-text .role{
-    text-shadow:0 1px 0 rgba(236,238,242,0.9), 0 0 14px rgba(236,238,242,0.9);
+    text-shadow:0 1px 0 rgba(22,24,26,0.9), 0 0 14px rgba(22,24,26,0.9);
   }
   .eyebrow{font-family:'JetBrains Mono';font-size:12.5px;color:var(--red);margin-bottom:12px;}
   .hero h1{font-size:31px;letter-spacing:-0.01em;}
@@ -86,17 +87,17 @@
     position:relative;z-index:2;pointer-events:none;
     font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono';
     display:inline-block;margin:0 0 16px 0;line-height:1.5;
-    text-shadow:0 0 8px rgba(236,238,242,0.95), 0 0 8px rgba(236,238,242,0.95);
+    text-shadow:0 0 8px rgba(22,24,26,0.95), 0 0 8px rgba(22,24,26,0.95);
   }
 
-  section{padding:52px 0;border-bottom:1px solid var(--line);}
+  section{padding:88px 0;border-bottom:1px solid var(--line);}
   section:last-of-type{border-bottom:none;}
-  .section-head{margin-bottom:26px;}
+  .section-head{margin-bottom:34px;}
   .section-head h2{font-size:20px;}
   .section-head .num{font-family:'JetBrains Mono';font-size:12px;color:var(--ink-soft);margin-bottom:6px;}
 
   .about-grid{display:grid;grid-template-columns:104px 1fr;gap:26px;align-items:start;}
-  .about-grid img{width:104px;height:104px;object-fit:cover;border:1px solid var(--line);filter:grayscale(25%);}
+  .about-grid img{width:104px;height:104px;object-fit:cover;border:1px solid var(--line);}
   .about-grid .edu{margin-top:16px;font-size:13.5px;color:var(--ink-soft);font-family:'JetBrains Mono';}
   .about-grid .edu div{margin-bottom:5px;}
   .about-grid .edu b{color:var(--ink);font-weight:500;}
@@ -153,6 +154,26 @@
     .hero h1{font-size:27px;}
   }
   @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} }
+
+  #droneWrap{
+    position:fixed;top:0;left:0;z-index:300;pointer-events:none;
+    transition:transform .75s cubic-bezier(.22,.9,.24,1);
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.55));
+    animation:droneBob 2.6s ease-in-out infinite;
+  }
+  @keyframes droneBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  #droneWrap svg{display:block;}
+  .rotor{animation:rotorPulse 0.5s linear infinite;}
+  @keyframes rotorPulse{0%,100%{opacity:.18}50%{opacity:.4}}
+
+  #droneBeam{
+    position:fixed;z-index:299;pointer-events:none;top:0;left:0;
+    width:170px;height:170px;border-radius:50%;
+    background:radial-gradient(circle, rgba(174,139,78,0.38), rgba(174,139,78,0.10) 42%, transparent 72%);
+    opacity:0;transform:translate(-50%,-50%) scale(0.55);
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  #droneBeam.active{opacity:1;transform:translate(-50%,-50%) scale(1);}
 </style>
 </head>
 <body>
@@ -328,6 +349,22 @@
 
 <footer class="wrap">© 2026 krishna mowli</footer>
 
+<div id="droneBeam"></div>
+<div id="droneWrap" aria-hidden="true">
+  <svg viewBox="0 0 60 60" width="42" height="42">
+    <line x1="30" y1="30" x2="12" y2="12" stroke="#AE8B4E" stroke-width="1.4"/>
+    <line x1="30" y1="30" x2="48" y2="12" stroke="#AE8B4E" stroke-width="1.4"/>
+    <line x1="30" y1="30" x2="12" y2="48" stroke="#AE8B4E" stroke-width="1.4"/>
+    <line x1="30" y1="30" x2="48" y2="48" stroke="#AE8B4E" stroke-width="1.4"/>
+    <circle class="rotor" cx="12" cy="12" r="7" fill="#E7E3D3"/>
+    <circle class="rotor" cx="48" cy="12" r="7" fill="#E7E3D3"/>
+    <circle class="rotor" cx="12" cy="48" r="7" fill="#E7E3D3"/>
+    <circle class="rotor" cx="48" cy="48" r="7" fill="#E7E3D3"/>
+    <polygon points="30,19 39,30 30,41 21,30" fill="#201F19" stroke="#AE8B4E" stroke-width="1.3"/>
+    <circle cx="30" cy="30" r="3" fill="#B23B2A"/>
+  </svg>
+</div>
+
 <script>
 (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -365,7 +402,6 @@
   const safety = 38;      // desired clearance between robots
   const lidarRange = 140;
   const bodyLen = 27, bodyW = 18;
-  const LIDAR_TRAIL = 14; // how many past sweep angles to render as fading trail
 
   function randGoal(){ return { x: 24+Math.random()*(W-48), y: 24+Math.random()*(H-48) }; }
 
@@ -377,7 +413,7 @@
       speed: 0,
       goal: randGoal(),
       lidarAngle: Math.random()*Math.PI*2,
-      lidarHistory: [],
+
       jx:0, jy:0 // small stochastic jitter (process noise)
     });
   }
@@ -444,9 +480,7 @@
       r.y = Math.max(14, Math.min(H-14, r.y));
 
       // LIDAR sweep (continuous rotation, independent of heading)
-      r.lidarAngle += 0.085;
-      r.lidarHistory.push(r.lidarAngle);
-      if(r.lidarHistory.length > LIDAR_TRAIL) r.lidarHistory.shift();
+      r.lidarAngle += 0.07;
 
       // tiny process-noise jitter on rendered position
       r.jx = r.jx*0.85 + (Math.random()-0.5)*0.9;
@@ -467,73 +501,113 @@
   function drawRobot(r){
     const x = r.x+r.jx, y = r.y+r.jy;
 
-    // LIDAR radar-style sweep trail, drawn first (world space, behind robot body)
-    const bx = x, by = y;
-    for(let k=0;k<r.lidarHistory.length;k++){
-      const ang = r.lidarHistory[k];
-      const t = (k+1)/r.lidarHistory.length; // 0 = oldest, 1 = newest
-      const alpha = 0.035 + t*t*0.22;
-      const grad = ctx.createLinearGradient(bx, by, bx+Math.cos(ang)*lidarRange, by+Math.sin(ang)*lidarRange);
-      grad.addColorStop(0, `rgba(165,54,42,${alpha})`);
-      grad.addColorStop(1, 'rgba(165,54,42,0)');
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1 + t*1.3;
-      ctx.beginPath();
-      ctx.moveTo(bx, by);
-      ctx.lineTo(bx+Math.cos(ang)*lidarRange, by+Math.sin(ang)*lidarRange);
-      ctx.stroke();
-    }
-    // bright leading edge of the sweep
-    const headAng = r.lidarAngle;
+    // LIDAR: single light sweep line (no trail)
+    const grad = ctx.createLinearGradient(x, y, x+Math.cos(r.lidarAngle)*lidarRange, y+Math.sin(r.lidarAngle)*lidarRange);
+    grad.addColorStop(0, 'rgba(178,59,42,0.32)');
+    grad.addColorStop(1, 'rgba(178,59,42,0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 0.8;
     ctx.beginPath();
-    ctx.arc(bx+Math.cos(headAng)*lidarRange, by+Math.sin(headAng)*lidarRange, 2, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(165,54,42,0.85)';
-    ctx.fill();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x+Math.cos(r.lidarAngle)*lidarRange, y+Math.sin(r.lidarAngle)*lidarRange);
+    ctx.stroke();
 
     ctx.save();
     ctx.translate(x,y);
     ctx.rotate(r.heading);
 
-    // soft shadow
-    ctx.fillStyle = 'rgba(22,32,46,0.14)';
+    const L = bodyLen, Wd = bodyW;
+
+    // ground shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.ellipse(0, bodyW*0.58, bodyLen*0.52, bodyW*0.16, 0, 0, Math.PI*2);
+    ctx.ellipse(1, Wd*0.56, L*0.5, Wd*0.15, 0, 0, Math.PI*2);
     ctx.fill();
 
-    // tracks/wheels
-    ctx.fillStyle = '#596273';
-    ctx.fillRect(-bodyLen*0.42, -bodyW*0.62, bodyLen*0.84, bodyW*0.14);
-    ctx.fillRect(-bodyLen*0.42,  bodyW*0.48, bodyLen*0.84, bodyW*0.14);
+    // segmented tracks (tread look, not a solid bar)
+    ctx.fillStyle = '#121310';
+    [-1,1].forEach(side=>{
+      roundRectPath(-L*0.48, side*Wd*0.62-Wd*0.08, L*0.96, Wd*0.16, Wd*0.06);
+      ctx.fill();
+    });
+    ctx.fillStyle = '#3A3C33';
+    for(let s=-1; s<=1; s+=2){
+      for(let tx=-L*0.44; tx<L*0.44; tx+=L*0.13){
+        ctx.fillRect(tx, s*Wd*0.62-Wd*0.06, L*0.07, Wd*0.12);
+      }
+    }
 
-    // body (rounded rect, TurtleBot-ish cylinder silhouette seen from top)
-    roundRectPath(-bodyLen*0.5, -bodyW*0.5, bodyLen, bodyW, bodyW*0.3);
-    ctx.fillStyle = '#F6F7F9';
+    // chassis: angular hexagonal hull (tapered front), not a plain rounded rect
+    const bodyGrad = ctx.createLinearGradient(0,-Wd*0.5,0,Wd*0.5);
+    bodyGrad.addColorStop(0, '#302F26');
+    bodyGrad.addColorStop(0.5, '#201F19');
+    bodyGrad.addColorStop(1, '#131310');
+    ctx.beginPath();
+    ctx.moveTo( L*0.50, 0);
+    ctx.lineTo( L*0.30, -Wd*0.46);
+    ctx.lineTo(-L*0.36, -Wd*0.46);
+    ctx.lineTo(-L*0.50, -Wd*0.22);
+    ctx.lineTo(-L*0.50,  Wd*0.22);
+    ctx.lineTo(-L*0.36,  Wd*0.46);
+    ctx.lineTo( L*0.30,  Wd*0.46);
+    ctx.closePath();
+    ctx.fillStyle = bodyGrad;
     ctx.fill();
-    ctx.lineWidth = 1.6;
-    ctx.strokeStyle = '#16202E';
+    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = '#AE8B4E';
+    ctx.globalAlpha = 0.55;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // top rim highlight (subtle dimensionality)
+    ctx.beginPath();
+    ctx.moveTo(-L*0.3, -Wd*0.42);
+    ctx.lineTo(L*0.26, -Wd*0.42);
+    ctx.strokeStyle = 'rgba(231,227,211,0.18)';
+    ctx.lineWidth = 1;
     ctx.stroke();
 
-    // heading indicator (front edge tick)
-    ctx.fillStyle = '#A5362A';
+    // side sensor pods
+    ctx.fillStyle = '#AE8B4E';
+    ctx.fillRect(-L*0.05, -Wd*0.56, L*0.12, Wd*0.1);
+    ctx.fillRect(-L*0.05,  Wd*0.46, L*0.12, Wd*0.1);
+
+    // antenna
+    ctx.strokeStyle = '#9B9985';
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(bodyLen*0.5-1.5, 0);
-    ctx.lineTo(bodyLen*0.5-bodyLen*0.3, -bodyW*0.22);
-    ctx.lineTo(bodyLen*0.5-bodyLen*0.3,  bodyW*0.22);
+    ctx.moveTo(-L*0.3, -Wd*0.1);
+    ctx.lineTo(-L*0.5, -Wd*0.52);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(-L*0.5, -Wd*0.52, 1.4, 0, Math.PI*2);
+    ctx.fillStyle = '#B23B2A';
+    ctx.fill();
+
+    // heading/hazard tip
+    ctx.fillStyle = '#B23B2A';
+    ctx.beginPath();
+    ctx.moveTo(L*0.5, 0);
+    ctx.lineTo(L*0.30, -Wd*0.12);
+    ctx.lineTo(L*0.30,  Wd*0.12);
     ctx.closePath();
     ctx.fill();
 
-    // sensor dome (spins with the lidar sweep for a "rotating turret" read)
+    // rotating sensor turret (spins with the lidar sweep)
     ctx.save();
     ctx.rotate(r.lidarAngle - r.heading);
     ctx.beginPath();
-    ctx.arc(0,0,bodyW*0.26,0,Math.PI*2);
-    ctx.fillStyle = '#2056A8';
+    ctx.arc(0,0,Wd*0.22,0,Math.PI*2);
+    ctx.fillStyle = '#1D1F1D';
     ctx.fill();
+    ctx.lineWidth = 1.1;
+    ctx.strokeStyle = '#AE8B4E';
+    ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(0,0);
-    ctx.lineTo(bodyW*0.5,0);
-    ctx.strokeStyle = '#2056A8';
-    ctx.lineWidth = 1.4;
+    ctx.lineTo(Wd*0.46,0);
+    ctx.strokeStyle = '#AE8B4E';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
 
@@ -550,8 +624,8 @@
       const fade = Math.max(0, 1 - age/9000);
       ctx.beginPath();
       ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
-      ctx.fillStyle = `rgba(165,54,42,${0.10*fade})`;
-      ctx.strokeStyle = `rgba(165,54,42,${0.55*fade})`;
+      ctx.fillStyle = `rgba(178,59,42,${0.16*fade})`;
+      ctx.strokeStyle = `rgba(178,59,42,${0.55*fade})`;
       ctx.lineWidth = 1.2;
       ctx.fill(); ctx.stroke();
       // detection ping if any lidar beam is roughly pointed at it and close
@@ -563,28 +637,33 @@
             const pulse = (Math.sin(now/120)+1)/2;
             ctx.beginPath();
             ctx.arc(o.x,o.y,o.r+3+pulse*3,0,Math.PI*2);
-            ctx.strokeStyle = `rgba(165,54,42,${0.5*fade})`;
+            ctx.strokeStyle = `rgba(178,59,42,${0.5*fade})`;
             ctx.stroke();
           }
         }
       });
     });
 
-    // faint goal markers + dashed intent line
+    // waypoint reticle (survey/targeting bracket, not a game pickup) + thin solid bearing line
     robots.forEach(r=>{
-      ctx.save();
-      ctx.setLineDash([3,4]);
-      ctx.strokeStyle = 'rgba(32,86,168,0.18)';
+      ctx.strokeStyle = 'rgba(174,139,78,0.16)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(r.x, r.y);
       ctx.lineTo(r.goal.x, r.goal.y);
       ctx.stroke();
-      ctx.restore();
-      ctx.beginPath();
-      ctx.arc(r.goal.x, r.goal.y, 2.5, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(32,86,168,0.35)';
-      ctx.fill();
+
+      const gx = r.goal.x, gy = r.goal.y, s = 6, g = 3;
+      ctx.strokeStyle = 'rgba(174,139,78,0.55)';
+      ctx.lineWidth = 1.2;
+      // four corner brackets forming a targeting reticle
+      [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sy])=>{
+        ctx.beginPath();
+        ctx.moveTo(gx+sx*s, gy+sy*g);
+        ctx.lineTo(gx+sx*s, gy+sy*s);
+        ctx.lineTo(gx+sx*g, gy+sy*s);
+        ctx.stroke();
+      });
     });
 
     robots.forEach(drawRobot);
@@ -596,6 +675,46 @@
     if(!reduceMotion) requestAnimationFrame(loop);
   }
   if(reduceMotion){ draw(); } else { loop(); }
+})();
+</script>
+
+<script>
+(function(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wrap = document.getElementById('droneWrap');
+  const beam = document.getElementById('droneBeam');
+  const heroEl = document.getElementById('heroSection');
+  if(!wrap || !beam) return;
+
+  if(reduceMotion){ wrap.style.display='none'; beam.style.display='none'; return; }
+
+  function idlePos(){ return { x: window.innerWidth-66, y: window.innerHeight-66 }; }
+  function place(x,y){ wrap.style.transform = `translate(${x}px, ${y}px)`; }
+
+  let idle = idlePos();
+  place(idle.x, idle.y);
+  let returnTimer = null;
+
+  window.addEventListener('resize', ()=>{
+    idle = idlePos();
+    if(!returnTimer) place(idle.x, idle.y);
+  });
+
+  document.addEventListener('click', (e)=>{
+    if(heroEl && heroEl.contains(e.target)) return; // hero handles its own obstacle clicks
+    const x = e.clientX, y = e.clientY;
+    place(x-21, y-56);
+    beam.style.left = x+'px';
+    beam.style.top = y+'px';
+    beam.classList.add('active');
+    clearTimeout(returnTimer);
+    setTimeout(()=> beam.classList.remove('active'), 600);
+    returnTimer = setTimeout(()=>{
+      idle = idlePos();
+      place(idle.x, idle.y);
+      returnTimer = null;
+    }, 1200);
+  });
 })();
 </script>
 
