@@ -159,10 +159,25 @@
     position:fixed;top:0;left:0;z-index:300;pointer-events:none;
     transition:transform .75s cubic-bezier(.22,.9,.24,1);
   }
-  #droneWrap svg{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.55));animation:droneBob 2.6s ease-in-out infinite;}
-  @keyframes droneBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-  .rotor{animation:rotorPulse 0.5s linear infinite;}
-  @keyframes rotorPulse{0%,100%{opacity:.18}50%{opacity:.4}}
+  #droneWrap svg{display:block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));}
+  .drone-core{animation:coreGlow 1.6s ease-in-out infinite;}
+  @keyframes coreGlow{0%,100%{opacity:.75}50%{opacity:1}}
+  .rotor{animation:rotorPulse 0.9s ease-in-out infinite;}
+  @keyframes rotorPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+  .word-target.absorbing{
+    display:inline-block;
+    animation: wordAbsorb 1s cubic-bezier(.3,.1,.3,1);
+  }
+  @keyframes wordAbsorb{
+    0%{ transform: translateY(0) rotate(0deg) scale(1); filter:none; color:inherit;}
+    14%{ transform: translateY(-2px) rotate(-3deg) scale(1.04); }
+    28%{ transform: translateY(2px) rotate(3deg) scale(0.97);}
+    42%{ transform: translateY(-3px) rotate(-3deg) scale(1.04);}
+    58%{ transform: translateY(-7px) rotate(2deg) scale(0.88); color:#AE8B4E; filter:brightness(1.6);}
+    78%{ transform: translateY(-15px) rotate(-2deg) scale(0.7); opacity:0.5; filter:brightness(2.2);}
+    100%{ transform: translateY(0) rotate(0deg) scale(1); opacity:1; filter:none; color:inherit;}
+  }
 
   #beamSvg{position:fixed;inset:0;width:100vw;height:100vh;z-index:299;pointer-events:none;opacity:0;transition:opacity .3s ease;}
   #beamSvg.active{opacity:1;}
@@ -345,30 +360,49 @@
 <svg id="beamSvg" aria-hidden="true">
   <defs>
     <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#AE8B4E" stop-opacity="0.5"/>
-      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0.05"/>
+      <stop offset="0%" stop-color="#E7E3D3" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#AE8B4E" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="beamCoreGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E7E3D3" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0.1"/>
     </linearGradient>
     <radialGradient id="beamGlowGrad">
-      <stop offset="0%" stop-color="#AE8B4E" stop-opacity="0.45"/>
-      <stop offset="60%" stop-color="#AE8B4E" stop-opacity="0.12"/>
+      <stop offset="0%" stop-color="#E7E3D3" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#AE8B4E" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <polygon id="beamCone" points="0,0 0,0 0,0 0,0" fill="url(#beamGrad)"/>
+  <polygon id="beamCore" points="0,0 0,0 0,0 0,0" fill="url(#beamCoreGrad)"/>
   <circle id="beamGlow" cx="0" cy="0" r="0" fill="url(#beamGlowGrad)"/>
+  <g id="beamParticles"></g>
 </svg>
 <div id="droneWrap" aria-hidden="true">
-  <svg viewBox="0 0 60 60" width="42" height="42">
-    <line x1="30" y1="30" x2="12" y2="12" stroke="#AE8B4E" stroke-width="1.4"/>
-    <line x1="30" y1="30" x2="48" y2="12" stroke="#AE8B4E" stroke-width="1.4"/>
-    <line x1="30" y1="30" x2="12" y2="48" stroke="#AE8B4E" stroke-width="1.4"/>
-    <line x1="30" y1="30" x2="48" y2="48" stroke="#AE8B4E" stroke-width="1.4"/>
-    <circle class="rotor" cx="12" cy="12" r="7" fill="#E7E3D3"/>
-    <circle class="rotor" cx="48" cy="12" r="7" fill="#E7E3D3"/>
-    <circle class="rotor" cx="12" cy="48" r="7" fill="#E7E3D3"/>
-    <circle class="rotor" cx="48" cy="48" r="7" fill="#E7E3D3"/>
-    <polygon points="30,19 39,30 30,41 21,30" fill="#201F19" stroke="#AE8B4E" stroke-width="1.3"/>
-    <circle cx="30" cy="30" r="3" fill="#B23B2A"/>
+  <svg viewBox="0 0 70 50" width="58" height="42">
+    <defs>
+      <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#E7E3D3"/>
+        <stop offset="55%" stop-color="#AE8B4E"/>
+        <stop offset="100%" stop-color="#B23B2A" stop-opacity="0.2"/>
+      </radialGradient>
+      <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2B2A23"/>
+        <stop offset="100%" stop-color="#15140F"/>
+      </linearGradient>
+    </defs>
+    <!-- swept fins -->
+    <polygon points="35,25 8,12 2,16 22,27" fill="#1D1C17" stroke="#AE8B4E" stroke-width="0.8" opacity="0.9"/>
+    <polygon points="35,25 8,38 2,34 22,23" fill="#1D1C17" stroke="#AE8B4E" stroke-width="0.8" opacity="0.9"/>
+    <!-- main hull: elongated hex -->
+    <polygon points="63,25 48,13 22,13 10,25 22,37 48,37" fill="url(#hullGrad)" stroke="#AE8B4E" stroke-width="1.1"/>
+    <!-- canopy seam -->
+    <line x1="22" y1="13" x2="22" y2="37" stroke="rgba(231,227,211,0.12)" stroke-width="1"/>
+    <!-- glowing core -->
+    <circle class="drone-core" cx="40" cy="25" r="6.5" fill="url(#coreGrad)"/>
+    <!-- nav light -->
+    <circle class="rotor" cx="63" cy="25" r="1.8" fill="#B23B2A"/>
   </svg>
 </div>
 
@@ -430,6 +464,70 @@
     if(d > Math.PI) d -= Math.PI*2;
     if(d < -Math.PI) d += Math.PI*2;
     return d;
+  }
+
+  // ---------- cargo drones: ferrying labeled crates across the upper hero ----------
+  const CARGO_LABELS = ['Probability','Stochastic Processes','Reinforcement Learning','Multi-Agent Systems','Convex Optimization','Control Theory'];
+  const cargoDrones = CARGO_LABELS.map((label, i)=>({
+    label,
+    y: 0.10 + (i % 3) * 0.085,
+    x: Math.random(),
+    speed: 0.00028 + Math.random()*0.00018,
+    dir: i % 2 === 0 ? 1 : -1,
+    bob: Math.random()*Math.PI*2
+  }));
+
+  function stepCargo(t){
+    cargoDrones.forEach(c=>{
+      c.x += c.speed*c.dir;
+      if(c.dir>0 && c.x>1.15) c.x = -0.15;
+      if(c.dir<0 && c.x<-0.15) c.x = 1.15;
+    });
+  }
+
+  function drawCargoDrone(c,t){
+    const x = c.x*W, y = c.y*H + Math.sin(t*0.0012 + c.bob)*6;
+    const facing = c.dir;
+    ctx.save();
+    ctx.translate(x,y);
+
+    // cable
+    ctx.strokeStyle = 'rgba(155,153,133,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0,5); ctx.lineTo(0,17); ctx.stroke();
+
+    // crate (boulder) with label
+    ctx.font = '600 9.5px "JetBrains Mono", monospace';
+    const tw = ctx.measureText(c.label).width;
+    const padX = 7, crateW = tw+padX*2, crateH = 15;
+    roundRectPath(-crateW/2, 17, crateW, crateH, 3);
+    ctx.fillStyle = 'rgba(29,31,29,0.9)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(174,139,78,0.55)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#E7E3D3';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(c.label, 0, 17+crateH/2+0.5);
+
+    // tiny drone body above the cable
+    ctx.scale(facing,1);
+    ctx.fillStyle = '#201F19';
+    ctx.strokeStyle = '#AE8B4E';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(9,0); ctx.lineTo(3,-5); ctx.lineTo(-9,-3); ctx.lineTo(-9,3); ctx.lineTo(3,5);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,0,2,0,Math.PI*2); ctx.fillStyle='#B23B2A'; ctx.fill();
+    // rotor shimmer
+    const sh = 0.2+0.25*Math.abs(Math.sin(t*0.02+c.bob));
+    ctx.fillStyle = `rgba(231,227,211,${sh})`;
+    ctx.beginPath(); ctx.ellipse(-9,0,2.6,1.2,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(9,0,2.6,1.2,0,0,Math.PI*2); ctx.fill();
+
+    ctx.restore();
   }
 
   function step(dt){
@@ -674,14 +772,18 @@
     });
 
     robots.forEach(drawRobot);
+
+    const t = performance.now();
+    cargoDrones.forEach(c=>drawCargoDrone(c,t));
   }
 
   function loop(){
     step();
+    stepCargo(performance.now());
     draw();
     if(!reduceMotion) requestAnimationFrame(loop);
   }
-  if(reduceMotion){ draw(); } else { loop(); }
+  if(reduceMotion){ draw(); cargoDrones.forEach(c=>drawCargoDrone(c,performance.now())); } else { loop(); }
 })();
 </script>
 
@@ -691,14 +793,14 @@
   const wrap = document.getElementById('droneWrap');
   const beamSvg = document.getElementById('beamSvg');
   const beamCone = document.getElementById('beamCone');
+  const beamCore = document.getElementById('beamCore');
   const beamGlow = document.getElementById('beamGlow');
+  const particleG = document.getElementById('beamParticles');
   const heroEl = document.getElementById('heroSection');
   if(!wrap || !beamSvg) return;
-
   if(reduceMotion){ wrap.style.display='none'; beamSvg.style.display='none'; return; }
 
-  const DRONE_W = 42, DRONE_H = 42;
-  const TRAVEL_MS = 750;
+  const DRONE_W = 58, DRONE_H = 42;
 
   function resizeSvg(){
     beamSvg.setAttribute('width', window.innerWidth);
@@ -708,48 +810,115 @@
   window.addEventListener('resize', resizeSvg);
   resizeSvg();
 
-  function idlePos(){ return { x: window.innerWidth-DRONE_W-24, y: window.innerHeight-DRONE_H-24 }; }
-  let pos = idlePos();
-  function place(x,y){ pos = {x,y}; wrap.style.transform = `translate(${x}px, ${y}px)`; }
-  place(pos.x, pos.y);
+  // ---------- continuous hover position (scroll-linked, never idle) ----------
+  const current = { x: window.innerWidth-DRONE_W-30, y: 140 };
+  let wordLock = null; // {x,y,until}
 
-  let returnTimer = null, beamTimer = null;
+  function hoverTarget(t){
+    const docH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const frac = Math.min(1, window.scrollY / docH);
+    const baseX = window.innerWidth - DRONE_W - 30;
+    const baseY = 90 + frac * (window.innerHeight*0.6);
+    return {
+      x: baseX + Math.sin(t*0.00055)*16,
+      y: baseY + Math.cos(t*0.00042)*12
+    };
+  }
 
-  window.addEventListener('resize', ()=>{
-    if(!returnTimer){ const idle = idlePos(); place(idle.x, idle.y); }
-  });
+  function findWordSpanAt(clientX, clientY){
+    let range;
+    if(document.caretRangeFromPoint) range = document.caretRangeFromPoint(clientX, clientY);
+    else if(document.caretPositionFromPoint){
+      const p = document.caretPositionFromPoint(clientX, clientY);
+      if(p){ range = document.createRange(); range.setStart(p.offsetNode, p.offset); }
+    }
+    if(!range || range.startContainer.nodeType !== Node.TEXT_NODE) return null;
+    const node = range.startContainer, text = node.textContent, offset = range.startOffset;
+    if(!text || !text.trim()) return null;
+    let start = offset, end = offset;
+    const isWordChar = c => /[^\s]/.test(c);
+    while(start>0 && isWordChar(text[start-1])) start--;
+    while(end<text.length && isWordChar(text[end])) end++;
+    const word = text.slice(start,end);
+    if(!word.trim()) return null;
+    const wrapRange = document.createRange();
+    wrapRange.setStart(node, start);
+    wrapRange.setEnd(node, end);
+    const span = document.createElement('span');
+    span.className = 'word-target';
+    try{ wrapRange.surroundContents(span); } catch(err){ return null; }
+    return span;
+  }
 
-  function fireBeam(targetX, targetY){
-    // drone's current visual center
-    const dx = pos.x + DRONE_W/2, dy = pos.y + DRONE_H/2 + 10;
-    const spread = 20; // half-width of the beam at the target end
+  function spawnParticles(x1,y1,x2,y2){
+    particleG.innerHTML = '';
+    for(let i=0;i<7;i++){
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      const jitter = (Math.random()-0.5)*14;
+      c.setAttribute('r', 1.4+Math.random()*1.2);
+      c.setAttribute('fill', '#E7E3D3');
+      c.setAttribute('opacity', '0.85');
+      c.style.transformOrigin = 'center';
+      particleG.appendChild(c);
+      const delay = i*70;
+      const dur = 500+Math.random()*200;
+      const sx = x2+jitter, sy = y2;
+      const animStart = performance.now()+delay;
+      (function anim(){
+        const now = performance.now();
+        const p = Math.min(1, (now-animStart)/dur);
+        if(p<0){ requestAnimationFrame(anim); return; }
+        const cx = sx + (x1-sx)*p;
+        const cy = sy + (y1-sy)*p;
+        c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+        c.setAttribute('opacity', (1-p)*0.9);
+        if(p<1) requestAnimationFrame(anim); else c.remove();
+      })();
+    }
+  }
+
+  function fireBeamAt(targetX, targetY){
+    const dx = current.x + DRONE_W*0.62, dy = current.y + DRONE_H/2;
+    const spread = 19;
     const ang = Math.atan2(targetY-dy, targetX-dx);
     const perpX = Math.cos(ang+Math.PI/2), perpY = Math.sin(ang+Math.PI/2);
-    const p1x = dx+perpX*2,            p1y = dy+perpY*2;
-    const p2x = dx-perpX*2,            p2y = dy-perpY*2;
-    const p3x = targetX-perpX*spread,  p3y = targetY-perpY*spread;
-    const p4x = targetX+perpX*spread,  p4y = targetY+perpY*spread;
-    beamCone.setAttribute('points', `${p1x},${p1y} ${p4x},${p4y} ${p3x},${p3y} ${p2x},${p2y}`);
+    const mk = (hw) => `${dx+perpX*2},${dy+perpY*2} ${targetX+perpX*hw},${targetY+perpY*hw} ${targetX-perpX*hw},${targetY-perpY*hw} ${dx-perpX*2},${dy-perpY*2}`;
+    beamCone.setAttribute('points', mk(spread));
+    beamCore.setAttribute('points', mk(spread*0.4));
     beamGlow.setAttribute('cx', targetX);
     beamGlow.setAttribute('cy', targetY);
-    beamGlow.setAttribute('r', 42);
+    beamGlow.setAttribute('r', 36);
     beamSvg.classList.add('active');
-    clearTimeout(beamTimer);
-    beamTimer = setTimeout(()=>{ beamSvg.classList.remove('active'); }, 650);
+    spawnParticles(dx,dy,targetX,targetY);
+    setTimeout(()=> beamSvg.classList.remove('active'), 700);
   }
 
   document.addEventListener('click', (e)=>{
-    if(heroEl && heroEl.contains(e.target)) return; // hero handles its own obstacle clicks
-    const x = e.clientX, y = e.clientY;
-    clearTimeout(returnTimer);
-    place(x-DRONE_W/2, y-DRONE_H-26);
-    setTimeout(()=> fireBeam(x,y), TRAVEL_MS * 0.7);
-    returnTimer = setTimeout(()=>{
-      const idle = idlePos();
-      place(idle.x, idle.y);
-      returnTimer = null;
-    }, TRAVEL_MS + 1200);
+    if(heroEl && heroEl.contains(e.target)) return; // hero has its own obstacle-drop behavior
+    if(e.target.closest('a, button, .btn')) return; // don't hijack real navigation
+
+    const span = findWordSpanAt(e.clientX, e.clientY);
+    const rect = span ? span.getBoundingClientRect() : {left:e.clientX-4, top:e.clientY-8, width:8, height:16};
+    const targetX = rect.left + rect.width/2, targetY = rect.top + rect.height/2;
+
+    wordLock = { x: targetX-DRONE_W*0.62, y: targetY-DRONE_H/2-30, until: performance.now()+1500 };
+
+    setTimeout(()=>{
+      fireBeamAt(targetX, targetY);
+      if(span){ span.classList.add('absorbing'); setTimeout(()=>span.classList.remove('absorbing'), 1000); }
+    }, 520);
   });
+
+  function loop(t){
+    const target = (wordLock && t < wordLock.until) ? wordLock : hoverTarget(t);
+    current.x += (target.x-current.x)*0.07;
+    current.y += (target.y-current.y)*0.07;
+    const vx = target.x-current.x;
+    const tilt = Math.max(-8, Math.min(8, -vx*0.12));
+    wrap.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${tilt}deg)`;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
 })();
 </script>
 
