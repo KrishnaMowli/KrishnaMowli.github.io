@@ -158,22 +158,15 @@
   #droneWrap{
     position:fixed;top:0;left:0;z-index:300;pointer-events:none;
     transition:transform .75s cubic-bezier(.22,.9,.24,1);
-    filter:drop-shadow(0 4px 10px rgba(0,0,0,.55));
-    animation:droneBob 2.6s ease-in-out infinite;
   }
+  #droneWrap svg{display:block;filter:drop-shadow(0 4px 10px rgba(0,0,0,.55));animation:droneBob 2.6s ease-in-out infinite;}
   @keyframes droneBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-  #droneWrap svg{display:block;}
   .rotor{animation:rotorPulse 0.5s linear infinite;}
   @keyframes rotorPulse{0%,100%{opacity:.18}50%{opacity:.4}}
 
-  #droneBeam{
-    position:fixed;z-index:299;pointer-events:none;top:0;left:0;
-    width:170px;height:170px;border-radius:50%;
-    background:radial-gradient(circle, rgba(174,139,78,0.38), rgba(174,139,78,0.10) 42%, transparent 72%);
-    opacity:0;transform:translate(-50%,-50%) scale(0.55);
-    transition:opacity .4s ease, transform .4s ease;
-  }
-  #droneBeam.active{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  #beamSvg{position:fixed;inset:0;width:100vw;height:100vh;z-index:299;pointer-events:none;opacity:0;transition:opacity .3s ease;}
+  #beamSvg.active{opacity:1;}
+  #beamGlow{transition:r .3s ease;}
 </style>
 </head>
 <body>
@@ -195,7 +188,7 @@
   <canvas id="sim"></canvas>
   <div class="wrap hero-inner">
     <div class="hero-text">
-      <div class="eyebrow">// systems &amp; control, iit hyderabad</div>
+      <div class="eyebrow">Systems &amp; Control — IIT Hyderabad</div>
       <h1>Making distributed systems provably safe under uncertainty.</h1>
       <p>M.Tech, Systems and Control. I work on multi-robot coordination, stochastic processes, and control theory — currently researching probabilistic collision-avoidance guarantees for robot swarms that move, sense, and communicate under noise.</p>
       <div class="links">
@@ -225,7 +218,7 @@
 </section>
 
 <section id="projects" class="wrap">
-  <div class="section-head"><h2>Selected work</h2></div>
+  <div class="section-head"><h2>Selected Work</h2></div>
 
   <div class="project">
     <div class="bar robo"></div>
@@ -335,7 +328,7 @@
 </section>
 
 <section id="contact" class="wrap">
-  <div class="section-head"><h2>Resume &amp; contact</h2></div>
+  <div class="section-head"><h2>Resume &amp; Contact</h2></div>
   <div class="resume-box">
     <div class="t">Master_CV.pdf<span>full academic record, achievements, certifications, and complete project detail</span></div>
     <a class="btn primary" href="assets/resume.pdf" target="_blank" rel="noopener">open resume →</a>
@@ -349,7 +342,21 @@
 
 <footer class="wrap">© 2026 krishna mowli</footer>
 
-<div id="droneBeam"></div>
+<svg id="beamSvg" aria-hidden="true">
+  <defs>
+    <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#AE8B4E" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0.05"/>
+    </linearGradient>
+    <radialGradient id="beamGlowGrad">
+      <stop offset="0%" stop-color="#AE8B4E" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#AE8B4E" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <polygon id="beamCone" points="0,0 0,0 0,0 0,0" fill="url(#beamGrad)"/>
+  <circle id="beamGlow" cx="0" cy="0" r="0" fill="url(#beamGlowGrad)"/>
+</svg>
 <div id="droneWrap" aria-hidden="true">
   <svg viewBox="0 0 60 60" width="42" height="42">
     <line x1="30" y1="30" x2="12" y2="12" stroke="#AE8B4E" stroke-width="1.4"/>
@@ -682,38 +689,66 @@
 (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wrap = document.getElementById('droneWrap');
-  const beam = document.getElementById('droneBeam');
+  const beamSvg = document.getElementById('beamSvg');
+  const beamCone = document.getElementById('beamCone');
+  const beamGlow = document.getElementById('beamGlow');
   const heroEl = document.getElementById('heroSection');
-  if(!wrap || !beam) return;
+  if(!wrap || !beamSvg) return;
 
-  if(reduceMotion){ wrap.style.display='none'; beam.style.display='none'; return; }
+  if(reduceMotion){ wrap.style.display='none'; beamSvg.style.display='none'; return; }
 
-  function idlePos(){ return { x: window.innerWidth-66, y: window.innerHeight-66 }; }
-  function place(x,y){ wrap.style.transform = `translate(${x}px, ${y}px)`; }
+  const DRONE_W = 42, DRONE_H = 42;
+  const TRAVEL_MS = 750;
 
-  let idle = idlePos();
-  place(idle.x, idle.y);
-  let returnTimer = null;
+  function resizeSvg(){
+    beamSvg.setAttribute('width', window.innerWidth);
+    beamSvg.setAttribute('height', window.innerHeight);
+    beamSvg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+  }
+  window.addEventListener('resize', resizeSvg);
+  resizeSvg();
+
+  function idlePos(){ return { x: window.innerWidth-DRONE_W-24, y: window.innerHeight-DRONE_H-24 }; }
+  let pos = idlePos();
+  function place(x,y){ pos = {x,y}; wrap.style.transform = `translate(${x}px, ${y}px)`; }
+  place(pos.x, pos.y);
+
+  let returnTimer = null, beamTimer = null;
 
   window.addEventListener('resize', ()=>{
-    idle = idlePos();
-    if(!returnTimer) place(idle.x, idle.y);
+    if(!returnTimer){ const idle = idlePos(); place(idle.x, idle.y); }
   });
+
+  function fireBeam(targetX, targetY){
+    // drone's current visual center
+    const dx = pos.x + DRONE_W/2, dy = pos.y + DRONE_H/2 + 10;
+    const spread = 20; // half-width of the beam at the target end
+    const ang = Math.atan2(targetY-dy, targetX-dx);
+    const perpX = Math.cos(ang+Math.PI/2), perpY = Math.sin(ang+Math.PI/2);
+    const p1x = dx+perpX*2,            p1y = dy+perpY*2;
+    const p2x = dx-perpX*2,            p2y = dy-perpY*2;
+    const p3x = targetX-perpX*spread,  p3y = targetY-perpY*spread;
+    const p4x = targetX+perpX*spread,  p4y = targetY+perpY*spread;
+    beamCone.setAttribute('points', `${p1x},${p1y} ${p4x},${p4y} ${p3x},${p3y} ${p2x},${p2y}`);
+    beamGlow.setAttribute('cx', targetX);
+    beamGlow.setAttribute('cy', targetY);
+    beamGlow.setAttribute('r', 42);
+    beamSvg.classList.add('active');
+    clearTimeout(beamTimer);
+    beamTimer = setTimeout(()=>{ beamSvg.classList.remove('active'); }, 650);
+  }
 
   document.addEventListener('click', (e)=>{
     if(heroEl && heroEl.contains(e.target)) return; // hero handles its own obstacle clicks
     const x = e.clientX, y = e.clientY;
-    place(x-21, y-56);
-    beam.style.left = x+'px';
-    beam.style.top = y+'px';
-    beam.classList.add('active');
     clearTimeout(returnTimer);
-    setTimeout(()=> beam.classList.remove('active'), 600);
+    place(x-DRONE_W/2, y-DRONE_H-26);
+    setTimeout(()=> fireBeam(x,y), TRAVEL_MS * 0.7);
     returnTimer = setTimeout(()=>{
-      idle = idlePos();
+      const idle = idlePos();
       place(idle.x, idle.y);
       returnTimer = null;
-    }, 1200);
+    }, TRAVEL_MS + 1200);
   });
 })();
 </script>
