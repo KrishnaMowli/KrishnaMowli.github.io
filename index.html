@@ -187,6 +187,16 @@
   #beamSvg{position:fixed;inset:0;width:100vw;height:100vh;z-index:299;pointer-events:none;opacity:0;transition:opacity .3s ease;}
   #beamSvg.active{opacity:1;}
   #beamGlow{transition:r .3s ease;}
+
+  #droneCaption{
+    position:fixed;z-index:301;pointer-events:none;max-width:210px;
+    background:rgba(29,31,29,0.94);border:1px solid var(--blue);
+    padding:8px 11px;font-family:'JetBrains Mono';font-size:11.5px;
+    color:var(--ink-soft);line-height:1.5;opacity:0;
+    transition:opacity .6s ease;
+  }
+  #droneCaption.show{opacity:1;}
+  #droneCaption .src{display:block;margin-top:4px;color:var(--blue);font-size:10.5px;}
 </style>
 </head>
 <body>
@@ -412,6 +422,7 @@
     <ellipse id="thrusterGlow" cx="8" cy="25" rx="3" ry="2.6" fill="#E7E3D3" opacity="0"/>
   </svg>
 </div>
+<div id="droneCaption" aria-hidden="true"></div>
 
 <script>
 (function(){
@@ -935,6 +946,32 @@
     }, 520+1290);
   });
 
+  // ---------- hover captions: short research quotes, shown only while idle-hovering ----------
+  const QUOTES = [
+    ['If I have seen further, it is by standing on the shoulders of giants.', 'Isaac Newton'],
+    ['The important thing is not to stop questioning.', 'Albert Einstein'],
+    ['Research is formalized curiosity.', 'Zora Neale Hurston'],
+    ['The best way to predict the future is to invent it.', 'Alan Kay'],
+    ['Science is a way of thinking much more than a body of knowledge.', 'Carl Sagan'],
+    ['An expert has made all the mistakes in a narrow field.', 'Niels Bohr'],
+    ['Everything should be as simple as possible, but not simpler.', 'Albert Einstein'],
+    ['In theory, theory and practice are the same. In practice, they are not.', 'attrib. Yogi Berra']
+  ];
+  const captionEl = document.getElementById('droneCaption');
+  let captionTimer = null;
+  function scheduleCaption(){
+    captionTimer = setTimeout(()=>{
+      if(!wordLock){
+        const [text, src] = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+        captionEl.innerHTML = `${text}<span class="src">— ${src}</span>`;
+        captionEl.classList.add('show');
+        setTimeout(()=> captionEl.classList.remove('show'), 4800);
+      }
+      scheduleCaption();
+    }, 9000+Math.random()*7000);
+  }
+  scheduleCaption();
+
   const thruster = wrap.querySelector('#thrusterGlow');
   function loop(t){
     const target = (wordLock && t < wordLock.until) ? wordLock : hoverTarget(t);
@@ -949,6 +986,14 @@
       const intensity = Math.min(1, speed*1.4);
       thruster.setAttribute('opacity', (0.15+intensity*0.75).toFixed(2));
       thruster.setAttribute('rx', (3+intensity*3.5).toFixed(1));
+    }
+    if(wordLock && t < wordLock.until){
+      captionEl.classList.remove('show');
+    } else if(captionEl.classList.contains('show')){
+      const left = Math.max(12, Math.min(window.innerWidth-222, current.x - 232));
+      const top = Math.max(12, current.y + 6);
+      captionEl.style.left = left+'px';
+      captionEl.style.top = top+'px';
     }
     requestAnimationFrame(loop);
   }
