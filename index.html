@@ -157,7 +157,7 @@
 
   #droneWrap{
     position:fixed;top:0;left:0;z-index:300;pointer-events:none;
-    transition:transform .75s cubic-bezier(.22,.9,.24,1);
+    will-change:transform;
   }
   #droneWrap svg{display:block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));}
   .drone-core{animation:coreGlow 1.6s ease-in-out infinite;}
@@ -909,7 +909,8 @@
   }
 
   function fireBeamAt(targetX, targetY){
-    const dx = current.x + DRONE_W*0.62, dy = current.y + DRONE_H/2;
+    // use the drone's rotation-pivot center (the glowing core sits near it regardless of heading)
+    const dx = current.x + DRONE_W/2, dy = current.y + DRONE_H/2;
     const spread = 19;
     const ang = Math.atan2(targetY-dy, targetX-dx);
     const perpX = Math.cos(ang+Math.PI/2), perpY = Math.sin(ang+Math.PI/2);
@@ -932,7 +933,7 @@
     const rect = span ? span.getBoundingClientRect() : {left:e.clientX-4, top:e.clientY-8, width:8, height:16};
     const targetX = rect.left + rect.width/2, targetY = rect.top + rect.height/2;
 
-    wordLock = { x: targetX-DRONE_W*0.62, y: targetY-DRONE_H/2-30, until: performance.now()+2650 };
+    wordLock = { x: targetX-DRONE_W/2, y: targetY-DRONE_H/2-30, until: performance.now()+2650 };
 
     setTimeout(()=>{
       fireBeamAt(targetX, targetY);
@@ -941,7 +942,7 @@
 
     // spit-out burst: particles travel back down from the drone to the word as it reappears
     setTimeout(()=>{
-      const dx = current.x + DRONE_W*0.62, dy = current.y + DRONE_H/2;
+      const dx = current.x + DRONE_W/2, dy = current.y + DRONE_H/2;
       spawnParticles(targetX, targetY, dx, dy);
     }, 520+1290);
   });
@@ -973,6 +974,7 @@
   scheduleCaption();
 
   const thruster = wrap.querySelector('#thrusterGlow');
+  let heading = 180; // current facing angle in degrees (artwork's nose points along +X = 0deg)
   function loop(t){
     const target = (wordLock && t < wordLock.until) ? wordLock : hoverTarget(t);
     const prevX = current.x, prevY = current.y;
@@ -980,8 +982,13 @@
     current.y += (target.y-current.y)*0.07;
     const vx = current.x-prevX, vy = current.y-prevY;
     const speed = Math.hypot(vx,vy);
-    const tilt = Math.max(-9, Math.min(9, -vx*0.6));
-    wrap.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${tilt}deg)`;
+    if(speed > 0.08){
+      const desired = Math.atan2(vy,vx) * 180/Math.PI;
+      let d = ((desired-heading+540)%360)-180;
+      heading += d*0.12; // smooth turning, not an instant snap
+    }
+    wrap.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${heading}deg)`;
+    window.__droneHeading = heading; // exposed so the beam can originate from the rotated nose
     if(thruster){
       const intensity = Math.min(1, speed*1.4);
       thruster.setAttribute('opacity', (0.15+intensity*0.75).toFixed(2));
