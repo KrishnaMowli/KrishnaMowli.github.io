@@ -402,24 +402,32 @@
         <stop offset="55%" stop-color="#AE8B4E"/>
         <stop offset="100%" stop-color="#B23B2A" stop-opacity="0.2"/>
       </radialGradient>
-      <linearGradient id="hullGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#2B2A23"/>
-        <stop offset="100%" stop-color="#15140F"/>
+      <linearGradient id="hullGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#15140F"/>
+        <stop offset="60%" stop-color="#2B2A23"/>
+        <stop offset="100%" stop-color="#3C3A2E"/>
       </linearGradient>
+      <radialGradient id="engineGrad">
+        <stop offset="0%" stop-color="#E7E3D3"/>
+        <stop offset="55%" stop-color="#B23B2A" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#B23B2A" stop-opacity="0"/>
+      </radialGradient>
     </defs>
-    <!-- swept fins -->
-    <polygon points="35,25 8,12 2,16 22,27" fill="#1D1C17" stroke="#AE8B4E" stroke-width="0.8" opacity="0.9"/>
-    <polygon points="35,25 8,38 2,34 22,23" fill="#1D1C17" stroke="#AE8B4E" stroke-width="0.8" opacity="0.9"/>
-    <!-- main hull: elongated hex -->
-    <polygon points="63,25 48,13 22,13 10,25 22,37 48,37" fill="url(#hullGrad)" stroke="#AE8B4E" stroke-width="1.1"/>
-    <!-- canopy seam -->
-    <line x1="22" y1="13" x2="22" y2="37" stroke="rgba(231,227,211,0.12)" stroke-width="1"/>
-    <!-- glowing core -->
-    <circle class="drone-core" cx="40" cy="25" r="6.5" fill="url(#coreGrad)"/>
-    <!-- nav light -->
-    <circle class="rotor" cx="63" cy="25" r="1.8" fill="#B23B2A"/>
-    <!-- thruster glow (brightens with movement speed) -->
-    <ellipse id="thrusterGlow" cx="8" cy="25" rx="3" ry="2.6" fill="#E7E3D3" opacity="0"/>
+    <!-- delta-wing hull, nose at the right (heading 0deg) -->
+    <polygon points="68,25 24,7 6,13 6,37 24,43" fill="url(#hullGrad)" stroke="#AE8B4E" stroke-width="1.2"/>
+    <!-- spine panel line -->
+    <line x1="22" y1="25" x2="61" y2="25" stroke="rgba(231,227,211,0.16)" stroke-width="1"/>
+    <!-- wing edge accents -->
+    <line x1="24" y1="7" x2="6" y2="13" stroke="#AE8B4E" stroke-width="0.8" opacity="0.55"/>
+    <line x1="24" y1="43" x2="6" y2="37" stroke="#AE8B4E" stroke-width="0.8" opacity="0.55"/>
+    <!-- canopy + glowing core -->
+    <ellipse cx="45" cy="25" rx="8" ry="4.6" fill="#15140F" stroke="#AE8B4E" stroke-width="0.9"/>
+    <circle class="drone-core" cx="45" cy="25" r="3.4" fill="url(#coreGrad)"/>
+    <!-- nose light -->
+    <circle class="rotor" cx="67" cy="25" r="1.5" fill="#B23B2A"/>
+    <!-- twin rear engines (brighten with movement speed) -->
+    <ellipse id="thrusterGlow" cx="7" cy="14" rx="2.6" ry="2" fill="url(#engineGrad)" opacity="0"/>
+    <ellipse id="thrusterGlow2" cx="7" cy="36" rx="2.6" ry="2" fill="url(#engineGrad)" opacity="0"/>
   </svg>
 </div>
 <div id="droneCaption" aria-hidden="true"></div>
@@ -851,8 +859,8 @@
     const baseX = window.innerWidth - DRONE_W - 30;
     const baseY = 90 + frac * (window.innerHeight*0.6);
     return {
-      x: baseX + Math.sin(t*0.00055)*16,
-      y: baseY + Math.cos(t*0.00042)*12
+      x: baseX + Math.sin(t*0.00035)*14,
+      y: baseY + Math.cos(t*0.00027)*10
     };
   }
 
@@ -926,18 +934,36 @@
   }
 
   document.addEventListener('click', (e)=>{
+    // clicking the drone itself: show a caption immediately, nothing else
+    const droneHit = e.clientX >= current.x-8 && e.clientX <= current.x+DRONE_W+8 &&
+                      e.clientY >= current.y-8 && e.clientY <= current.y+DRONE_H+8;
+    if(droneHit){ showCaptionNow(); return; }
+
     if(heroEl && heroEl.contains(e.target)) return; // hero has its own obstacle-drop behavior
     if(e.target.closest('a, button, .btn')) return; // don't hijack real navigation
 
     const span = findWordSpanAt(e.clientX, e.clientY);
-    const rect = span ? span.getBoundingClientRect() : {left:e.clientX-4, top:e.clientY-8, width:8, height:16};
-    const targetX = rect.left + rect.width/2, targetY = rect.top + rect.height/2;
+    if(!span) return; // no text here at all — do nothing
 
+    const rect = span.getBoundingClientRect();
+    const pad = 3;
+    const onWord = e.clientX >= rect.left-pad && e.clientX <= rect.right+pad &&
+                   e.clientY >= rect.top-pad  && e.clientY <= rect.bottom+pad;
+    if(!onWord){
+      // caret snapped to a nearby word but the click itself was on empty space — undo the wrap, do nothing
+      const parent = span.parentNode;
+      while(span.firstChild) parent.insertBefore(span.firstChild, span);
+      parent.removeChild(span);
+      return;
+    }
+
+    const targetX = rect.left + rect.width/2, targetY = rect.top + rect.height/2;
     wordLock = { x: targetX-DRONE_W/2, y: targetY-DRONE_H/2-30, until: performance.now()+2650 };
 
     setTimeout(()=>{
       fireBeamAt(targetX, targetY);
-      if(span){ span.classList.add('absorbing'); setTimeout(()=>span.classList.remove('absorbing'), 1900); }
+      span.classList.add('absorbing');
+      setTimeout(()=>span.classList.remove('absorbing'), 1900);
     }, 520);
 
     // spit-out burst: particles travel back down from the drone to the word as it reappears
@@ -959,40 +985,46 @@
     ['In theory, theory and practice are the same. In practice, they are not.', 'attrib. Yogi Berra']
   ];
   const captionEl = document.getElementById('droneCaption');
-  let captionTimer = null;
+  let captionTimer = null, captionHideTimer = null;
+  function showCaptionNow(){
+    const [text, src] = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+    captionEl.innerHTML = `${text}<span class="src">— ${src}</span>`;
+    captionEl.classList.add('show');
+    clearTimeout(captionHideTimer);
+    captionHideTimer = setTimeout(()=> captionEl.classList.remove('show'), 4800);
+  }
   function scheduleCaption(){
     captionTimer = setTimeout(()=>{
-      if(!wordLock){
-        const [text, src] = QUOTES[Math.floor(Math.random()*QUOTES.length)];
-        captionEl.innerHTML = `${text}<span class="src">— ${src}</span>`;
-        captionEl.classList.add('show');
-        setTimeout(()=> captionEl.classList.remove('show'), 4800);
-      }
+      if(!wordLock) showCaptionNow();
       scheduleCaption();
     }, 9000+Math.random()*7000);
   }
   scheduleCaption();
 
   const thruster = wrap.querySelector('#thrusterGlow');
+  const thruster2 = wrap.querySelector('#thrusterGlow2');
   let heading = 180; // current facing angle in degrees (artwork's nose points along +X = 0deg)
   function loop(t){
     const target = (wordLock && t < wordLock.until) ? wordLock : hoverTarget(t);
     const prevX = current.x, prevY = current.y;
-    current.x += (target.x-current.x)*0.07;
-    current.y += (target.y-current.y)*0.07;
+    current.x += (target.x-current.x)*0.045;
+    current.y += (target.y-current.y)*0.045;
     const vx = current.x-prevX, vy = current.y-prevY;
     const speed = Math.hypot(vx,vy);
-    if(speed > 0.08){
+    if(speed > 0.06){
       const desired = Math.atan2(vy,vx) * 180/Math.PI;
       let d = ((desired-heading+540)%360)-180;
-      heading += d*0.12; // smooth turning, not an instant snap
+      heading += d*0.07; // smooth turning, not an instant snap
     }
     wrap.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${heading}deg)`;
     window.__droneHeading = heading; // exposed so the beam can originate from the rotated nose
     if(thruster){
-      const intensity = Math.min(1, speed*1.4);
-      thruster.setAttribute('opacity', (0.15+intensity*0.75).toFixed(2));
-      thruster.setAttribute('rx', (3+intensity*3.5).toFixed(1));
+      const intensity = Math.min(1, speed*1.6);
+      const op = (0.12+intensity*0.75).toFixed(2);
+      const rx = (2.6+intensity*3).toFixed(1);
+      thruster.setAttribute('opacity', op);
+      thruster.setAttribute('rx', rx);
+      if(thruster2){ thruster2.setAttribute('opacity', op); thruster2.setAttribute('rx', rx); }
     }
     if(wordLock && t < wordLock.until){
       captionEl.classList.remove('show');
