@@ -11,16 +11,21 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper: #16181A;
-    --paper-raised: #1D1F1D;
-    --grid: #2B2D27;
-    --line: #38392F;
-    --ink: #E7E3D3;
-    --ink-soft: #9B9985;
-    --blue: #AE8B4E;
-    --blue-soft: #2A2518;
-    --red: #B23B2A;
-    --sage: #5B6B52;
+    /* Okabe-Ito colorblind-safe categorical palette (Nature Methods standard) as the accent system */
+    --paper: #F6F7FA;
+    --paper-raised: #FFFFFF;
+    --grid: #E7E9EE;
+    --line: #D8DCE4;
+    --ink: #1B1F24;
+    --ink-soft: #5B6472;
+    --blue: #0072B2;      /* Okabe-Ito blue — primary accent, links, buttons */
+    --blue-soft: #DCEAF6;
+    --red: #D55E00;       /* Okabe-Ito vermillion — hazard/critical */
+    --sage: #009E73;      /* Okabe-Ito bluish green — VLSI category, verified */
+    --orange: #E69F00;    /* Okabe-Ito orange — warm accent */
+    --skyblue: #56B4E9;   /* Okabe-Ito sky blue — live/sensor data */
+    --purple: #CC79A7;    /* Okabe-Ito reddish purple — secondary accent */
+    --purple-soft: #F7EAF1;
     --maxw: 700px;
   }
   *{box-sizing:border-box;}
@@ -30,7 +35,8 @@
     background:
       linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 34px,
       linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/34px 100%,
-      radial-gradient(ellipse at 20% 0%, rgba(178,59,42,0.05), transparent 55%),
+      radial-gradient(ellipse at 15% 0%, rgba(0,114,178,0.05), transparent 55%),
+      radial-gradient(ellipse at 90% 15%, rgba(204,121,167,0.05), transparent 50%),
       var(--paper);
     background-attachment:local;
     color:var(--ink);
@@ -49,11 +55,11 @@
   a{color:inherit;}
   .wrap{max-width:1180px;margin:0 auto;padding:0 32px 0 52px;position:relative;}
   .wrap::before{
-    content:"";position:absolute;left:28px;top:0;bottom:0;width:1px;background:rgba(178,59,42,0.35);
+    content:"";position:absolute;left:28px;top:0;bottom:0;width:1px;background:rgba(213,94,0,0.4);
   }
   .prose{max-width:var(--maxw);}
 
-  nav{position:sticky;top:0;z-index:50;background:rgba(22,24,26,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav{position:sticky;top:0;z-index:50;background:rgba(246,247,250,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
   nav .wrap::before{display:none;}
   nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;padding-left:32px;}
   nav .markname{font-family:'JetBrains Mono';font-weight:600;font-size:14.5px;}
@@ -67,11 +73,11 @@
   .hero canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
   .hero-inner{position:relative;z-index:2;padding:56px 0 40px;width:100%;pointer-events:none;}
   .hero-text{
-    max-width:560px;background:rgba(22,24,26,0.38);backdrop-filter:blur(2px);
+    max-width:560px;background:rgba(255,255,255,0.55);backdrop-filter:blur(2px);
     padding:22px 26px;border:1px solid var(--line);pointer-events:auto;
   }
   .hero-text h1, .hero-text p, .hero-text .eyebrow, .hero-text .role{
-    text-shadow:0 1px 0 rgba(22,24,26,0.9), 0 0 14px rgba(22,24,26,0.9);
+    text-shadow:0 1px 0 rgba(246,247,250,0.9), 0 0 14px rgba(246,247,250,0.9);
   }
   .eyebrow{font-family:'JetBrains Mono';font-size:12.5px;color:var(--red);margin-bottom:12px;}
   .hero h1{font-size:31px;letter-spacing:-0.01em;}
@@ -87,7 +93,7 @@
     position:relative;z-index:2;pointer-events:none;
     font-size:12px;color:var(--ink-soft);font-family:'JetBrains Mono';
     display:inline-block;margin:0 0 16px 0;line-height:1.5;
-    text-shadow:0 0 8px rgba(22,24,26,0.95), 0 0 8px rgba(22,24,26,0.95);
+    text-shadow:0 0 8px rgba(246,247,250,0.95), 0 0 8px rgba(246,247,250,0.95);
   }
 
   section{padding:88px 0;border-bottom:1px solid var(--line);}
@@ -173,12 +179,12 @@
     0%{   transform: translateY(0) rotate(0deg) scale(1); filter:none; opacity:1;}
     10%{  transform: translateY(-2px) rotate(-3deg) scale(1.04); }
     20%{  transform: translateY(2px) rotate(3deg) scale(0.97);}
-    30%{  transform: translateY(-3px) rotate(-3deg) scale(1.04); color:#AE8B4E;}
+    30%{  transform: translateY(-3px) rotate(-3deg) scale(1.04); color:#0072B2;}
     40%{  transform: translateY(-9px) rotate(3deg) scale(0.75); filter:brightness(1.8); opacity:0.6;}
     /* fully absorbed: gone */
     48%, 60%{ transform: translateY(-18px) scale(0); opacity:0; }
     /* spit back out at original spot, with a small overshoot bounce */
-    68%{  transform: translateY(6px) scale(1.18); opacity:1; filter:brightness(1.6); color:#AE8B4E;}
+    68%{  transform: translateY(6px) scale(1.18); opacity:1; filter:brightness(1.6); color:#0072B2;}
     80%{  transform: translateY(-3px) scale(0.94); filter:none;}
     90%{  transform: translateY(1px) scale(1.02);}
     100%{ transform: translateY(0) rotate(0deg) scale(1); opacity:1; filter:none; color:inherit;}
@@ -190,7 +196,8 @@
 
   #droneCaption{
     position:fixed;z-index:301;pointer-events:none;max-width:210px;
-    background:rgba(29,31,29,0.94);border:1px solid var(--blue);
+    background:rgba(255,255,255,0.97);border:1px solid var(--blue);
+    box-shadow:0 4px 14px rgba(27,31,36,0.12);
     padding:8px 11px;font-family:'JetBrains Mono';font-size:11.5px;
     color:var(--ink-soft);line-height:1.5;opacity:0;
     transition:opacity .6s ease;
@@ -375,18 +382,18 @@
 <svg id="beamSvg" aria-hidden="true">
   <defs>
     <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#E7E3D3" stop-opacity="0.55"/>
-      <stop offset="45%" stop-color="#AE8B4E" stop-opacity="0.26"/>
-      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0.04"/>
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#0072B2" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#0072B2" stop-opacity="0.04"/>
     </linearGradient>
     <linearGradient id="beamCoreGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#E7E3D3" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0.1"/>
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0072B2" stop-opacity="0.1"/>
     </linearGradient>
     <radialGradient id="beamGlowGrad">
-      <stop offset="0%" stop-color="#E7E3D3" stop-opacity="0.55"/>
-      <stop offset="50%" stop-color="#AE8B4E" stop-opacity="0.22"/>
-      <stop offset="100%" stop-color="#AE8B4E" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#0072B2" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0072B2" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <polygon id="beamCone" points="0,0 0,0 0,0 0,0" fill="url(#beamGrad)"/>
@@ -398,9 +405,9 @@
   <svg viewBox="0 0 70 50" width="58" height="42">
     <defs>
       <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#E7E3D3"/>
-        <stop offset="55%" stop-color="#AE8B4E"/>
-        <stop offset="100%" stop-color="#B23B2A" stop-opacity="0.2"/>
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="55%" stop-color="#0072B2"/>
+        <stop offset="100%" stop-color="#D55E00" stop-opacity="0.2"/>
       </radialGradient>
       <linearGradient id="hullGrad" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0%" stop-color="#15140F"/>
@@ -408,23 +415,23 @@
         <stop offset="100%" stop-color="#3C3A2E"/>
       </linearGradient>
       <radialGradient id="engineGrad">
-        <stop offset="0%" stop-color="#E7E3D3"/>
-        <stop offset="55%" stop-color="#B23B2A" stop-opacity="0.7"/>
-        <stop offset="100%" stop-color="#B23B2A" stop-opacity="0"/>
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="55%" stop-color="#D55E00" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#D55E00" stop-opacity="0"/>
       </radialGradient>
     </defs>
     <!-- delta-wing hull, nose at the right (heading 0deg) -->
-    <polygon points="68,25 24,7 6,13 6,37 24,43" fill="url(#hullGrad)" stroke="#AE8B4E" stroke-width="1.2"/>
+    <polygon points="68,25 24,7 6,13 6,37 24,43" fill="url(#hullGrad)" stroke="#0072B2" stroke-width="1.2"/>
     <!-- spine panel line -->
-    <line x1="22" y1="25" x2="61" y2="25" stroke="rgba(231,227,211,0.16)" stroke-width="1"/>
+    <line x1="22" y1="25" x2="61" y2="25" stroke="rgba(255,255,255,0.16)" stroke-width="1"/>
     <!-- wing edge accents -->
-    <line x1="24" y1="7" x2="6" y2="13" stroke="#AE8B4E" stroke-width="0.8" opacity="0.55"/>
-    <line x1="24" y1="43" x2="6" y2="37" stroke="#AE8B4E" stroke-width="0.8" opacity="0.55"/>
+    <line x1="24" y1="7" x2="6" y2="13" stroke="#0072B2" stroke-width="0.8" opacity="0.55"/>
+    <line x1="24" y1="43" x2="6" y2="37" stroke="#0072B2" stroke-width="0.8" opacity="0.55"/>
     <!-- canopy + glowing core -->
-    <ellipse cx="45" cy="25" rx="8" ry="4.6" fill="#15140F" stroke="#AE8B4E" stroke-width="0.9"/>
+    <ellipse cx="45" cy="25" rx="8" ry="4.6" fill="#15140F" stroke="#0072B2" stroke-width="0.9"/>
     <circle class="drone-core" cx="45" cy="25" r="3.4" fill="url(#coreGrad)"/>
     <!-- nose light -->
-    <circle class="rotor" cx="67" cy="25" r="1.5" fill="#B23B2A"/>
+    <circle class="rotor" cx="67" cy="25" r="1.5" fill="#D55E00"/>
     <!-- twin rear engines (brighten with movement speed) -->
     <ellipse id="thrusterGlow" cx="7" cy="14" rx="2.6" ry="2" fill="url(#engineGrad)" opacity="0"/>
     <ellipse id="thrusterGlow2" cx="7" cy="36" rx="2.6" ry="2" fill="url(#engineGrad)" opacity="0"/>
@@ -493,7 +500,15 @@
   }
 
   // ---------- cargo drones: ferrying labeled crates, routed clear of the hero text panel ----------
-  const CARGO_LABELS = ['Probability','Stochastic Processes','Reinforcement Learning','Multi-Agent Systems','Convex Optimization','Control Theory'];
+  // each subject gets its own color from the Okabe-Ito categorical palette
+  const CARGO_LABELS = [
+    ['Probability', '#0072B2'],
+    ['Stochastic Processes', '#D55E00'],
+    ['Reinforcement Learning', '#009E73'],
+    ['Multi-Agent Systems', '#CC79A7'],
+    ['Convex Optimization', '#E69F00'],
+    ['Control Theory', '#56B4E9']
+  ];
   const heroTextEl = document.querySelector('.hero-text');
   let panelBottomFrac = 0.46; // fallback if measurement fails
   function measurePanel(){
@@ -505,9 +520,8 @@
   window.addEventListener('resize', measurePanel);
   setTimeout(measurePanel, 60); // after fonts/layout settle
 
-  const cargoDrones = CARGO_LABELS.map((label, i)=>({
-    label,
-    laneT: i / CARGO_LABELS.length, // 0..1 position within the safe lower band, reassigned below each frame via panelBottomFrac
+  const cargoDrones = CARGO_LABELS.map(([label,color], i)=>({
+    label, color,
     laneOffset: (i % 3) * 0.085,
     x: Math.random(),
     speed: 0.00028 + Math.random()*0.00018,
@@ -531,38 +545,38 @@
     ctx.translate(x,y);
 
     // cable
-    ctx.strokeStyle = 'rgba(155,153,133,0.35)';
+    ctx.strokeStyle = 'rgba(91,100,114,0.4)';
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0,5); ctx.lineTo(0,17); ctx.stroke();
 
-    // crate (boulder) with label
+    // crate (boulder) with label, tinted by its subject's color
     ctx.font = '600 9.5px "JetBrains Mono", monospace';
     const tw = ctx.measureText(c.label).width;
     const padX = 7, crateW = tw+padX*2, crateH = 15;
     roundRectPath(-crateW/2, 17, crateW, crateH, 3);
-    ctx.fillStyle = 'rgba(29,31,29,0.9)';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(174,139,78,0.55)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = c.color;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
-    ctx.fillStyle = '#E7E3D3';
+    ctx.fillStyle = c.color;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(c.label, 0, 17+crateH/2+0.5);
 
     // tiny drone body above the cable
     ctx.scale(facing,1);
-    ctx.fillStyle = '#201F19';
-    ctx.strokeStyle = '#AE8B4E';
+    ctx.fillStyle = '#20242B';
+    ctx.strokeStyle = c.color;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(9,0); ctx.lineTo(3,-5); ctx.lineTo(-9,-3); ctx.lineTo(-9,3); ctx.lineTo(3,5);
     ctx.closePath();
     ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0,0,2,0,Math.PI*2); ctx.fillStyle='#B23B2A'; ctx.fill();
+    ctx.beginPath(); ctx.arc(0,0,2,0,Math.PI*2); ctx.fillStyle=c.color; ctx.fill();
     // rotor shimmer
-    const sh = 0.2+0.25*Math.abs(Math.sin(t*0.02+c.bob));
-    ctx.fillStyle = `rgba(231,227,211,${sh})`;
+    const sh = 0.25+0.3*Math.abs(Math.sin(t*0.02+c.bob));
+    ctx.fillStyle = `rgba(27,31,36,${sh})`;
     ctx.beginPath(); ctx.ellipse(-9,0,2.6,1.2,0,0,Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(9,0,2.6,1.2,0,0,Math.PI*2); ctx.fill();
 
@@ -645,10 +659,10 @@
   function drawRobot(r){
     const x = r.x+r.jx, y = r.y+r.jy;
 
-    // LIDAR: single light sweep line (no trail)
+    // LIDAR: single light sweep line (no trail) — sky blue, reads as "live sensor"
     const grad = ctx.createLinearGradient(x, y, x+Math.cos(r.lidarAngle)*lidarRange, y+Math.sin(r.lidarAngle)*lidarRange);
-    grad.addColorStop(0, 'rgba(178,59,42,0.32)');
-    grad.addColorStop(1, 'rgba(178,59,42,0)');
+    grad.addColorStop(0, 'rgba(86,180,233,0.45)');
+    grad.addColorStop(1, 'rgba(86,180,233,0)');
     ctx.strokeStyle = grad;
     ctx.lineWidth = 0.8;
     ctx.beginPath();
@@ -663,29 +677,29 @@
     const L = bodyLen, Wd = bodyW;
 
     // ground shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillStyle = 'rgba(27,31,36,0.16)';
     ctx.beginPath();
     ctx.ellipse(1, Wd*0.56, L*0.5, Wd*0.15, 0, 0, Math.PI*2);
     ctx.fill();
 
     // segmented tracks (tread look, not a solid bar)
-    ctx.fillStyle = '#121310';
+    ctx.fillStyle = '#14171B';
     [-1,1].forEach(side=>{
       roundRectPath(-L*0.48, side*Wd*0.62-Wd*0.08, L*0.96, Wd*0.16, Wd*0.06);
       ctx.fill();
     });
-    ctx.fillStyle = '#3A3C33';
+    ctx.fillStyle = '#3C434E';
     for(let s=-1; s<=1; s+=2){
       for(let tx=-L*0.44; tx<L*0.44; tx+=L*0.13){
         ctx.fillRect(tx, s*Wd*0.62-Wd*0.06, L*0.07, Wd*0.12);
       }
     }
 
-    // chassis: angular hexagonal hull (tapered front), not a plain rounded rect
+    // chassis: angular hexagonal hull, dark for contrast against the light page, blue trim
     const bodyGrad = ctx.createLinearGradient(0,-Wd*0.5,0,Wd*0.5);
-    bodyGrad.addColorStop(0, '#302F26');
-    bodyGrad.addColorStop(0.5, '#201F19');
-    bodyGrad.addColorStop(1, '#131310');
+    bodyGrad.addColorStop(0, '#2E343D');
+    bodyGrad.addColorStop(0.5, '#20242B');
+    bodyGrad.addColorStop(1, '#14171B');
     ctx.beginPath();
     ctx.moveTo( L*0.50, 0);
     ctx.lineTo( L*0.30, -Wd*0.46);
@@ -698,8 +712,8 @@
     ctx.fillStyle = bodyGrad;
     ctx.fill();
     ctx.lineWidth = 1.2;
-    ctx.strokeStyle = '#AE8B4E';
-    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = '#0072B2';
+    ctx.globalAlpha = 0.65;
     ctx.stroke();
     ctx.globalAlpha = 1;
 
@@ -707,17 +721,17 @@
     ctx.beginPath();
     ctx.moveTo(-L*0.3, -Wd*0.42);
     ctx.lineTo(L*0.26, -Wd*0.42);
-    ctx.strokeStyle = 'rgba(231,227,211,0.18)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
     // side sensor pods
-    ctx.fillStyle = '#AE8B4E';
+    ctx.fillStyle = '#56B4E9';
     ctx.fillRect(-L*0.05, -Wd*0.56, L*0.12, Wd*0.1);
     ctx.fillRect(-L*0.05,  Wd*0.46, L*0.12, Wd*0.1);
 
     // antenna
-    ctx.strokeStyle = '#9B9985';
+    ctx.strokeStyle = '#8A92A0';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(-L*0.3, -Wd*0.1);
@@ -725,11 +739,11 @@
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(-L*0.5, -Wd*0.52, 1.4, 0, Math.PI*2);
-    ctx.fillStyle = '#B23B2A';
+    ctx.fillStyle = '#D55E00';
     ctx.fill();
 
     // heading/hazard tip
-    ctx.fillStyle = '#B23B2A';
+    ctx.fillStyle = '#D55E00';
     ctx.beginPath();
     ctx.moveTo(L*0.5, 0);
     ctx.lineTo(L*0.30, -Wd*0.12);
@@ -742,15 +756,15 @@
     ctx.rotate(r.lidarAngle - r.heading);
     ctx.beginPath();
     ctx.arc(0,0,Wd*0.22,0,Math.PI*2);
-    ctx.fillStyle = '#1D1F1D';
+    ctx.fillStyle = '#14171B';
     ctx.fill();
     ctx.lineWidth = 1.1;
-    ctx.strokeStyle = '#AE8B4E';
+    ctx.strokeStyle = '#56B4E9';
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(0,0);
     ctx.lineTo(Wd*0.46,0);
-    ctx.strokeStyle = '#AE8B4E';
+    ctx.strokeStyle = '#56B4E9';
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
@@ -768,8 +782,8 @@
       const fade = Math.max(0, 1 - age/9000);
       ctx.beginPath();
       ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
-      ctx.fillStyle = `rgba(178,59,42,${0.16*fade})`;
-      ctx.strokeStyle = `rgba(178,59,42,${0.55*fade})`;
+      ctx.fillStyle = `rgba(213,94,0,${0.16*fade})`;
+      ctx.strokeStyle = `rgba(213,94,0,${0.55*fade})`;
       ctx.lineWidth = 1.2;
       ctx.fill(); ctx.stroke();
       // detection ping if any lidar beam is roughly pointed at it and close
@@ -781,7 +795,7 @@
             const pulse = (Math.sin(now/120)+1)/2;
             ctx.beginPath();
             ctx.arc(o.x,o.y,o.r+3+pulse*3,0,Math.PI*2);
-            ctx.strokeStyle = `rgba(178,59,42,${0.5*fade})`;
+            ctx.strokeStyle = `rgba(213,94,0,${0.5*fade})`;
             ctx.stroke();
           }
         }
@@ -790,7 +804,7 @@
 
     // waypoint reticle (survey/targeting bracket, not a game pickup) + thin solid bearing line
     robots.forEach(r=>{
-      ctx.strokeStyle = 'rgba(174,139,78,0.16)';
+      ctx.strokeStyle = 'rgba(204,121,167,0.22)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(r.x, r.y);
@@ -798,7 +812,7 @@
       ctx.stroke();
 
       const gx = r.goal.x, gy = r.goal.y, s = 6, g = 3;
-      ctx.strokeStyle = 'rgba(174,139,78,0.55)';
+      ctx.strokeStyle = 'rgba(204,121,167,0.65)';
       ctx.lineWidth = 1.2;
       // four corner brackets forming a targeting reticle
       [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sy])=>{
@@ -895,7 +909,7 @@
       const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
       const jitter = (Math.random()-0.5)*14;
       c.setAttribute('r', 1.4+Math.random()*1.2);
-      c.setAttribute('fill', '#E7E3D3');
+      c.setAttribute('fill', '#FFFFFF');
       c.setAttribute('opacity', '0.85');
       c.style.transformOrigin = 'center';
       particleG.appendChild(c);
