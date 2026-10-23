@@ -1021,11 +1021,13 @@
 
   // thrusters fire specifically from scrolling — not idle hover drift
   let scrollFire = 0, lastScrollY = window.scrollY;
-  window.addEventListener('scroll', ()=>{
+  function onScroll(){
     const dy = Math.abs(window.scrollY - lastScrollY);
     lastScrollY = window.scrollY;
-    scrollFire = Math.min(1, scrollFire + dy*0.06);
-  }, {passive:true});
+    scrollFire = Math.min(1, scrollFire + dy*0.12);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  document.addEventListener('wheel', ()=>{ scrollFire = Math.min(1, scrollFire+0.35); }, {passive:true});
 
   function loop(t){
     const target = (wordLock && t < wordLock.until) ? wordLock : hoverTarget(t);
@@ -1042,14 +1044,20 @@
     wrap.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${heading}deg)`;
     window.__droneHeading = heading; // exposed so the beam can originate from the rotated nose
 
-    scrollFire *= 0.9; // natural decay once scrolling stops
+    scrollFire *= 0.93; // natural decay once scrolling stops
     if(thruster){
       const intensity = Math.min(1, scrollFire);
-      const op = (0.08+intensity*0.8).toFixed(2);
-      const rx = (2.2+intensity*3.4).toFixed(1);
+      const op = (0.04+intensity*0.96).toFixed(2);
+      const rx = (2+intensity*7.5).toFixed(1);
+      const ry = (1.6+intensity*3.5).toFixed(1);
       thruster.setAttribute('opacity', op);
       thruster.setAttribute('rx', rx);
-      if(thruster2){ thruster2.setAttribute('opacity', op); thruster2.setAttribute('rx', rx); }
+      thruster.setAttribute('ry', ry);
+      if(thruster2){
+        thruster2.setAttribute('opacity', op);
+        thruster2.setAttribute('rx', rx);
+        thruster2.setAttribute('ry', ry);
+      }
     }
     if(wordLock && t < wordLock.until){
       captionEl.classList.remove('show');
