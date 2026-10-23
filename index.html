@@ -1018,6 +1018,15 @@
   const thruster = wrap.querySelector('#thrusterGlow');
   const thruster2 = wrap.querySelector('#thrusterGlow2');
   let heading = 180; // current facing angle in degrees (artwork's nose points along +X = 0deg)
+
+  // thrusters fire specifically from scrolling — not idle hover drift
+  let scrollFire = 0, lastScrollY = window.scrollY;
+  window.addEventListener('scroll', ()=>{
+    const dy = Math.abs(window.scrollY - lastScrollY);
+    lastScrollY = window.scrollY;
+    scrollFire = Math.min(1, scrollFire + dy*0.06);
+  }, {passive:true});
+
   function loop(t){
     const target = (wordLock && t < wordLock.until) ? wordLock : hoverTarget(t);
     const prevX = current.x, prevY = current.y;
@@ -1032,10 +1041,12 @@
     }
     wrap.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${heading}deg)`;
     window.__droneHeading = heading; // exposed so the beam can originate from the rotated nose
+
+    scrollFire *= 0.9; // natural decay once scrolling stops
     if(thruster){
-      const intensity = Math.min(1, speed*1.6);
-      const op = (0.12+intensity*0.75).toFixed(2);
-      const rx = (2.6+intensity*3).toFixed(1);
+      const intensity = Math.min(1, scrollFire);
+      const op = (0.08+intensity*0.8).toFixed(2);
+      const rx = (2.2+intensity*3.4).toFixed(1);
       thruster.setAttribute('opacity', op);
       thruster.setAttribute('rx', rx);
       if(thruster2){ thruster2.setAttribute('opacity', op); thruster2.setAttribute('rx', rx); }
